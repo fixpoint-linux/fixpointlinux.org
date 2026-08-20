@@ -69,6 +69,21 @@
   nav .links a:hover { color: var(--fg); text-decoration: none; }
   nav .links a.dhake { color: var(--accent); font-weight: 600; }
   nav .links a.dhake:hover { color: var(--accent2); }
+  /* dropdown "components" submenu */
+  .dropdown { position: relative; display: inline-block; }
+  .dropdown .toggle { font-family: var(--mono); font-size: 13px; color: var(--dim); white-space: nowrap; cursor: pointer; border: none; background: none; padding: 0; }
+  .dropdown .toggle:hover { color: var(--fg); }
+  .dropdown .menu {
+    display: none; position: absolute; top: 100%; right: 0; z-index: 60;
+    min-width: 200px; margin-top: 10px; padding: 6px 0;
+    background: var(--bg2); border: 1px solid var(--line); border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+  .dropdown .menu a { display: block; font-family: var(--mono); font-size: 13px; color: var(--dim); padding: 7px 16px; white-space: nowrap; }
+  .dropdown .menu a:hover { color: var(--accent); background: rgba(106,214,161,0.06); text-decoration: none; }
+  .dropdown .menu a .fx { color: var(--accent); }
+  .dropdown:hover .menu { display: block; }
+  .dropdown .menu .ddhake { color: var(--accent); font-weight: 600; }
   @media (max-width: 620px) {
     nav .brand { display: none; }
     nav .wrap { justify-content: center; }
@@ -132,7 +147,19 @@
       <a href="#stack">stack</a>
       <a href="#principles">principles</a>
       <a href="#design">design</a>
-      <a class="dhake" href="https://fixpoint-linux.github.io/dhake/">dhake</a>
+      <span class="dropdown">
+        <button class="toggle" aria-haspopup="true">components ▾</button>
+        <span class="menu" role="menu">
+          <a href="https://fixpoint-linux.github.io/datalog-dafsa/"><span class="fx">datalog-dafsa</span> →</a>
+          <a class="ddhake" href="https://fixpoint-linux.github.io/dhake/">dhake →</a>
+          <a href="https://github.com/fixpoint-linux/dhall-c">dhall-c</a>
+          <a href="https://github.com/fixpoint-linux/dafsa">dafsa</a>
+          <a href="https://github.com/fixpoint-linux/compendium">compendium</a>
+          <a href="https://github.com/fixpoint-linux/visage">visage</a>
+          <a href="https://github.com/fixpoint-linux/shen-meta">shen-meta</a>
+          <a href="https://github.com/fixpoint-linux/fixpoint-linux">fixpoint-linux</a>
+        </span>
+      </span>
     </span>
   </div>
 </nav>
