@@ -50,13 +50,15 @@ in  { targets =
               , phony = True
               , recipe =
                   -- dhake.com is a cosmopolitan APE: its system() uses a
-                  -- restricted mini-shell whose builtin `rm` lacks -r (and
-                  -- the Rm action is remove(3), non-recursive). Use the real
-                  -- GNU rm by absolute path to clear the populated tree.
+                  -- restricted mini-shell whose builtin `rm` lacks -r and
+                  -- `mkdir` lacks -p (the Rm/Mkdir actions are non-recursive
+                  -- remove(3)/mkdir(2) and fail on a missing parent or a
+                  -- populated tree). On a fresh CI checkout `vendor/` does not
+                  -- exist, so use the real GNU tools by absolute path and -p.
                   [ < Shell = "/bin/rm -rf vendor/@mfe" >
-                  , < Mkdir = "vendor/@mfe" >
-                  , < Mkdir = "vendor/@mfe/core" >
-                  , < Mkdir = "vendor/@mfe/framework" >
+                  , < Shell =
+                        "/bin/mkdir -p vendor/@mfe/core vendor/@mfe/framework"
+                    >
                   , < Shell =
                         "cp mfe-framework/packages/core/dist/*.js vendor/@mfe/core/"
                     >
