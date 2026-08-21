@@ -129,8 +129,10 @@ navView =
                         [ text "fxstore →" ]
                     , a [ class "ddhallc", href "https://fixpointlinux.org/dhall-c/", attribute "data-mfe-route" "/dhall-c" ]
                         [ text "dhall-c →" ]
-                    , Fixpoint.Nav.menuItem "https://github.com/fixpoint-linux/dafsa" "dafsa"
-                    , Fixpoint.Nav.menuItem "https://github.com/fixpoint-linux/compendium" "compendium"
+                    , a [ class "ddafsa", href "https://fixpointlinux.org/dafsa/", attribute "data-mfe-route" "/dafsa" ]
+                        [ text "dafsa →" ]
+                    , a [ class "dcompendium", href "https://fixpointlinux.org/compendium/", attribute "data-mfe-route" "/compendium" ]
+                        [ text "compendium →" ]
                     , Fixpoint.Nav.menuItem "https://github.com/fixpoint-linux/visage" "visage"
                     , Fixpoint.Nav.menuItem "https://github.com/fixpoint-linux/shen-meta" "shen-meta"
                     , Fixpoint.Nav.menuItem "https://github.com/fixpoint-linux/fixpoint-linux" "fixpoint-linux"
@@ -368,7 +370,8 @@ stackSection =
                         ]
                     , stackRow "compendium"
                         "https://github.com/fixpoint-linux/compendium"
-                        [ text "A small, self-contained authoritative DNS server (UDP, RFC 1035), configured in Dhall, shipped as a single APE binary."
+                        [ text "A small, self-contained authoritative DNS server (UDP, RFC 1035), configured in Dhall, shipped as a single APE binary. "
+                        , a [ href "https://fixpointlinux.org/compendium/", attribute "data-mfe-route" "/compendium" ] [ text "Docs →" ]
                         ]
                     , stackRow "visage"
                         "https://github.com/fixpoint-linux/visage"
@@ -378,7 +381,8 @@ stackSection =
                         ]
                     , stackRow "dafsa"
                         "https://github.com/fixpoint-linux/dafsa"
-                        [ text "The Carrasco–Forcada incremental DAFSA — minimal automaton with add/delete/lookup, persistence and DOT export."
+                        [ text "The Carrasco–Forcada incremental DAFSA — minimal automaton with add/delete/lookup, persistence and DOT export. "
+                        , a [ href "https://fixpointlinux.org/dafsa/", attribute "data-mfe-route" "/dafsa" ] [ text "Docs →" ]
                         ]
                     , stackRow "shen-meta"
                         "https://github.com/fixpoint-linux/shen-meta"

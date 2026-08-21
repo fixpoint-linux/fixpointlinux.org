@@ -13,6 +13,7 @@ const app = await createApp({
   root: document.getElementById('app'),
   routes: [
     { path: '/', template: 'fixpoint', name: 'home' },
+    { path: '/dafsa', template: 'dafsa', name: 'dafsa' },
     { path: '/dhake', template: 'dhake', name: 'dhake' },
     { path: '/fxstore', template: 'fxstore', name: 'fxstore' },
     { path: '/datalog-dafsa', template: 'dafsa-landing', name: 'dafsa-landing' },
