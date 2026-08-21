@@ -14,6 +14,7 @@ const app = await createApp({
   routes: [
     { path: '/', template: 'fixpoint', name: 'home' },
     { path: '/dhake', template: 'dhake', name: 'dhake' },
+    { path: '/fxstore', template: 'fxstore', name: 'fxstore' },
   ],
   baseURL: '/shell/templates',
   // The SSG output only pre-renders the home route; a deep link/refresh on a

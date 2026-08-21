@@ -124,7 +124,8 @@ navView =
                     [ Fixpoint.Nav.menuItemFx "https://fixpoint-linux.github.io/datalog-dafsa/" "datalog-dafsa"
                     , a [ class "ddhake", href "https://fixpointlinux.org/dhake/", attribute "data-mfe-route" "/dhake" ]
                         [ text "dhake →" ]
-                    , Fixpoint.Nav.menuItemClass "dfxstore" "https://fixpoint-linux.github.io/fxstore/" "fxstore →"
+                    , a [ class "dfxstore", href "https://fixpointlinux.org/fxstore/", attribute "data-mfe-route" "/fxstore" ]
+                        [ text "fxstore →" ]
                     , Fixpoint.Nav.menuItem "https://github.com/fixpoint-linux/dhall-c" "dhall-c"
                     , Fixpoint.Nav.menuItem "https://github.com/fixpoint-linux/dafsa" "dafsa"
                     , Fixpoint.Nav.menuItem "https://github.com/fixpoint-linux/compendium" "compendium"
@@ -360,7 +361,7 @@ stackSection =
                         , text ", and builds each package's typed recipe into "
                         , Fixpoint.Code.inline "/fx/store/<hash>-<name>"
                         , text ". Crash-consistent, bwrap-sandboxed. "
-                        , a [ href "https://fixpoint-linux.github.io/fxstore/" ] [ text "Docs →" ]
+                        , a [ href "https://fixpointlinux.org/fxstore/" ] [ text "Docs →" ]
                         ]
                     , stackRow "compendium"
                         "https://github.com/fixpoint-linux/compendium"
