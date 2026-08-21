@@ -151,7 +151,7 @@
       <span class="dropdown">
         <button class="toggle" aria-haspopup="true">components ▾</button>
         <span class="menu" role="menu">
-          <a href="https://fixpoint-linux.github.io/datalog-dafsa/"><span class="fx">datalog-dafsa</span> →</a>
+          <a class="ddafsa" href="https://fixpointlinux.org/datalog-dafsa/"><span class="fx">datalog-dafsa</span> →</a>
           <a class="ddhake" href="https://fixpointlinux.org/dhake/">dhake →</a>
           <a class="dfxstore" href="https://fixpointlinux.org/fxstore/">fxstore →</a>
           <a href="https://github.com/fixpoint-linux/dhall-c">dhall-c</a>
@@ -240,7 +240,7 @@ $ fx rollback v039   <span class="dim"># record it as history, always undoable</
           <td class="desc"><b>The system itself</b> — a Dhall-specified, self-hosting Linux distro. Like Nix's <em>model</em> (pure derivations, content-addressed store, hermetic builds) without the Nix language. Time-travelling — the whole system remembers and rolls back. <a href="https://github.com/fixpoint-linux/fixpoint-linux/blob/main/DESIGN.md">Read the design →</a></td>
         </tr>
         <tr><td class="name"><a href="https://github.com/fixpoint-linux/dhall-c">dhall-c</a></td><td class="desc">A subset interpreter for Dhall, in C. <code>typecheck</code>, <code>normalize</code>, <code>to-json</code>/<code>toml</code>/<code>yaml</code>. The typed-config foundation everything builds on.</td></tr>
-        <tr><td class="name"><a href="https://github.com/fixpoint-linux/datalog-dafsa">datalog-dafsa</a></td><td class="desc">A DAFSA-backed Datalog engine in C. Facts into an on-disk minimal-acyclic-DAFSA store, rules to a small VM, reads from an mmap'd snapshot. <b>Native time travel</b> — immutable versioned snapshots and as-of queries as a first-class feature. <a href="https://fixpoint-linux.github.io/datalog-dafsa/">Docs →</a></td></tr>
+        <tr><td class="name"><a href="https://github.com/fixpoint-linux/datalog-dafsa">datalog-dafsa</a></td><td class="desc">A DAFSA-backed Datalog engine in C. Facts into an on-disk minimal-acyclic-DAFSA store, rules to a small VM, reads from an mmap'd snapshot. <b>Native time travel</b> — immutable versioned snapshots and as-of queries as a first-class feature. <a href="https://fixpointlinux.org/datalog-dafsa/">Docs →</a></td></tr>
         <tr><td class="name"><a href="https://github.com/fixpoint-linux/dhake">dhake</a></td><td class="desc">A Make-like build tool whose buildfile is a Dhall program (<code>Dhakefile.dhall</code>). Typed actions, incremental checks, phony targets, <code>-j</code> parallel builds. <b>Self-hosting</b> — it builds itself. <a href="https://fixpointlinux.org/dhake/">Docs →</a></td></tr>
         <tr><td class="name"><a href="https://github.com/fixpoint-linux/fxstore">fxstore</a></td><td class="desc">A <b>content-addressed build store</b> — reads a Dhall package set, computes the dependency closure as a least fixed point with <code>datalog-dafsa</code>, and builds each package's typed recipe into <code>/fx/store/&lt;hash&gt;-&lt;name&gt;</code>. Crash-consistent, bwrap-sandboxed. <a href="https://fixpointlinux.org/fxstore/">Docs →</a></td></tr>
         <tr><td class="name"><a href="https://github.com/fixpoint-linux/compendium">compendium</a></td><td class="desc">A small, self-contained authoritative DNS server (UDP, RFC 1035), configured in Dhall, shipped as a single APE binary.</td></tr>

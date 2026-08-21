@@ -121,7 +121,8 @@ navView =
             [ Fixpoint.Nav.dropdown
                 { toggle = "components ▾"
                 , items =
-                    [ Fixpoint.Nav.menuItemFx "https://fixpoint-linux.github.io/datalog-dafsa/" "datalog-dafsa"
+                    [ a [ class "ddafsa", href "https://fixpointlinux.org/datalog-dafsa/", attribute "data-mfe-route" "/datalog-dafsa" ]
+                        [ text "datalog-dafsa →" ]
                     , a [ class "ddhake", href "https://fixpointlinux.org/dhake/", attribute "data-mfe-route" "/dhake" ]
                         [ text "dhake →" ]
                     , a [ class "dfxstore", href "https://fixpointlinux.org/fxstore/", attribute "data-mfe-route" "/fxstore" ]
@@ -340,7 +341,7 @@ stackSection =
                         [ text "A DAFSA-backed Datalog engine in C. Facts into an on-disk minimal-acyclic-DAFSA store, rules to a small VM, reads from an mmap'd snapshot. "
                         , b [] [ text "Native time travel" ]
                         , text " — immutable versioned snapshots and as-of queries as a first-class feature. "
-                        , a [ href "https://fixpoint-linux.github.io/datalog-dafsa/" ] [ text "Docs →" ]
+                        , a [ href "https://fixpointlinux.org/datalog-dafsa/", attribute "data-mfe-route" "/datalog-dafsa" ] [ text "Docs →" ]
                         ]
                     , stackRow "dhake"
                         "https://github.com/fixpoint-linux/dhake"

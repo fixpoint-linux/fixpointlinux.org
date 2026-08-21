@@ -1,0 +1,11 @@
+<!--
+  shell/templates/dafsa-architecture.html — the route template for '/datalog-dafsa/architecture'.
+
+  The [data-mfe="dafsa-architecture"] element is the slot the shell's reconcile mounts
+  the (cross-origin, via import map) datalog-dafsa Elm MFE into. This route is
+  client-only: it is not pre-rendered by ssg.mjs, and is loaded on-demand when
+  the user navigates to /datalog-dafsa/architecture.
+-->
+<div class="fixpoint-root">
+  <div data-mfe="dafsa-architecture"></div>
+</div>

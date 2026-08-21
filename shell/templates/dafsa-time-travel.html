@@ -1,0 +1,11 @@
+<!--
+  shell/templates/dafsa-time-travel.html — the route template for '/datalog-dafsa/time-travel'.
+
+  The [data-mfe="dafsa-time-travel"] element is the slot the shell's reconcile mounts
+  the (cross-origin, via import map) datalog-dafsa Elm MFE into. This route is
+  client-only: it is not pre-rendered by ssg.mjs, and is loaded on-demand when
+  the user navigates to /datalog-dafsa/time-travel.
+-->
+<div class="fixpoint-root">
+  <div data-mfe="dafsa-time-travel"></div>
+</div>
