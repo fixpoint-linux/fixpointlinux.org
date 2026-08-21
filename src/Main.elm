@@ -2,11 +2,17 @@ module Main exposing (main)
 
 {-| The fixpoint-linux landing page as a plain `Browser.element` app.
 
-This module renders the *entire* landing page content (top nav + components
+This module renders the _entire_ landing page content (top nav + components
 dropdown, hero, and the `#idea` / `#time` / `#stack` / `#principles` /
 `#design` sections plus footer) into whatever node it is mounted in, using the
-exact CSS class names from the legacy static page (`LEGACY-index.html`) so the
-shared stylesheet in the shell just works.
+shared `Fixpoint.*` design package (`design/src` is a source-directory in this
+application's `elm.json`).
+
+The first child of the view is `Fixpoint.Style.stylesheet`, which emits the
+full brand stylesheet as a single `<style>` node. Because the page is
+pre-rendered under happy-dom by `scripts/ssg.mjs`, that `<style>` node is
+carried into the static HTML — the styling ships with the page instead of
+living in the shell's inline stylesheet.
 
 It is used in two places with identical rendering:
 
@@ -23,8 +29,17 @@ trivial and robust.
 -}
 
 import Browser
-import Html exposing (Html, a, b, button, code, div, em, footer, h1, h2, h3, header, li, nav, p, pre, section, span, table, tbody, td, text, th, thead, tr, ul)
-import Html.Attributes exposing (attribute, class, href, id)
+import Fixpoint.Card
+import Fixpoint.Checks
+import Fixpoint.Code
+import Fixpoint.Footer
+import Fixpoint.Grid
+import Fixpoint.Hero
+import Fixpoint.Nav
+import Fixpoint.Section
+import Fixpoint.Style
+import Html exposing (Html, a, b, div, em, li, p, pre, span, table, tbody, td, text, th, thead, tr)
+import Html.Attributes exposing (class, href)
 
 
 main : Program () Model Msg
@@ -71,7 +86,8 @@ subscriptions _ =
 view : Model -> Html Msg
 view _ =
     div []
-        [ navView
+        [ Fixpoint.Style.stylesheet
+        , navView
         , headerView
         , ideaSection
         , timeSection
@@ -88,45 +104,36 @@ view _ =
 
 navView : Html Msg
 navView =
-    nav []
-        [ div [ class "wrap" ]
-            [ span [ class "brand" ]
+    Fixpoint.Nav.view
+        { brand =
+            span []
                 [ span [ class "fx" ] [ text "fx" ]
                 , text "://fixpoint-linux"
                 ]
-            , span [ class "links" ]
-                [ a [ href "#idea" ] [ text "idea" ]
-                , a [ href "#time" ] [ text "time" ]
-                , a [ href "#stack" ] [ text "stack" ]
-                , a [ href "#principles" ] [ text "principles" ]
-                , a [ href "#design" ] [ text "design" ]
-                , span [ class "dropdown" ]
-                    [ button [ class "toggle", attribute "aria-haspopup" "true" ]
-                        [ text "components ▾" ]
-                    , span [ class "menu", attribute "role" "menu" ]
-                        [ a [ href "https://fixpoint-linux.github.io/datalog-dafsa/" ]
-                            [ span [ class "fx" ] [ text "datalog-dafsa" ], text " →" ]
-                        , a [ class "ddhake", href "https://fixpoint-linux.github.io/dhake/" ]
-                            [ text "dhake →" ]
-                        , a [ class "dfxstore", href "https://fixpoint-linux.github.io/fxstore/" ]
-                            [ text "fxstore →" ]
-                        , a [ href "https://github.com/fixpoint-linux/dhall-c" ]
-                            [ text "dhall-c" ]
-                        , a [ href "https://github.com/fixpoint-linux/dafsa" ]
-                            [ text "dafsa" ]
-                        , a [ href "https://github.com/fixpoint-linux/compendium" ]
-                            [ text "compendium" ]
-                        , a [ href "https://github.com/fixpoint-linux/visage" ]
-                            [ text "visage" ]
-                        , a [ href "https://github.com/fixpoint-linux/shen-meta" ]
-                            [ text "shen-meta" ]
-                        , a [ href "https://github.com/fixpoint-linux/fixpoint-linux" ]
-                            [ text "fixpoint-linux" ]
-                        ]
-                    ]
-                ]
+        , links =
+            [ Fixpoint.Nav.link "#idea" "idea"
+            , Fixpoint.Nav.link "#time" "time"
+            , Fixpoint.Nav.link "#stack" "stack"
+            , Fixpoint.Nav.link "#principles" "principles"
+            , Fixpoint.Nav.link "#design" "design"
             ]
-        ]
+        , extra =
+            [ Fixpoint.Nav.dropdown
+                { toggle = "components ▾"
+                , items =
+                    [ Fixpoint.Nav.menuItemFx "https://fixpoint-linux.github.io/datalog-dafsa/" "datalog-dafsa"
+                    , Fixpoint.Nav.menuItemClass "ddhake" "https://fixpoint-linux.github.io/dhake/" "dhake →"
+                    , Fixpoint.Nav.menuItemClass "dfxstore" "https://fixpoint-linux.github.io/fxstore/" "fxstore →"
+                    , Fixpoint.Nav.menuItem "https://github.com/fixpoint-linux/dhall-c" "dhall-c"
+                    , Fixpoint.Nav.menuItem "https://github.com/fixpoint-linux/dafsa" "dafsa"
+                    , Fixpoint.Nav.menuItem "https://github.com/fixpoint-linux/compendium" "compendium"
+                    , Fixpoint.Nav.menuItem "https://github.com/fixpoint-linux/visage" "visage"
+                    , Fixpoint.Nav.menuItem "https://github.com/fixpoint-linux/shen-meta" "shen-meta"
+                    , Fixpoint.Nav.menuItem "https://github.com/fixpoint-linux/fixpoint-linux" "fixpoint-linux"
+                    ]
+                }
+            ]
+        }
 
 
 
@@ -135,27 +142,25 @@ navView =
 
 headerView : Html Msg
 headerView =
-    header []
-        [ div [ class "wrap" ]
-            [ div [ class "prompt" ]
-                [ span [ class "hash" ] [ text "#" ]
-                , text " fixpoint-linux "
-                , span [ class "dollar" ] [ text "$" ]
-                , text " fx build --self-host"
-                , span [ class "blink" ] [ text "▊" ]
-                ]
-            , h1 []
-                [ text "A Linux system that is "
-                , span [ class "fx" ] [ text "a fixed point" ]
-                , text "."
-                ]
-            , div [ class "tagline" ]
-                [ text "deterministically built, "
-                , b [] [ text "from source, by itself" ]
-                , text "."
-                ]
+    Fixpoint.Hero.view
+        { prompt =
+            [ Fixpoint.Hero.hash
+            , text " fixpoint-linux "
+            , Fixpoint.Hero.dollar
+            , text " fx build --self-host"
+            , Fixpoint.Hero.blink
             ]
-        ]
+        , title =
+            [ text "A Linux system that is "
+            , Fixpoint.Hero.fx [ text "a fixed point" ]
+            , text "."
+            ]
+        , tagline =
+            [ text "deterministically built, "
+            , b [] [ text "from source, by itself" ]
+            , text "."
+            ]
+        }
 
 
 
@@ -164,54 +169,55 @@ headerView =
 
 ideaSection : Html Msg
 ideaSection =
-    section [ id "idea" ]
-        [ div [ class "wrap" ]
-            [ h2 [] [ text "The idea" ]
-            , div [ class "hint" ] [ text "// least_fixed_point(datalog) + dafsa" ]
-            , p []
-                [ code [] [ text "fixpoint-linux" ]
+    Fixpoint.Section.view
+        { id = "idea"
+        , title = "The idea"
+        , hint = "// least_fixed_point(datalog) + dafsa"
+        , children =
+            [ p []
+                [ Fixpoint.Code.inline "fixpoint-linux"
                 , text " is a collection of small, self-contained components written in "
                 , b [] [ text "C11" ]
                 , text " that assemble into a coherent Linux userspace. Every binary is compiled with "
-                , a [ href "https://github.com/jart/cosmopolitan" ] [ code [] [ text "cosmocc" ] ]
+                , a [ href "https://github.com/jart/cosmopolitan" ] [ Fixpoint.Code.inline "cosmocc" ]
                 , text " into a single portable "
-                , a [ href "https://justine.lol/ape.html" ] [ code [] [ text "Actually Portable Executable" ] ]
+                , a [ href "https://justine.lol/ape.html" ] [ Fixpoint.Code.inline "Actually Portable Executable" ]
                 , text " (APE) — one file that runs on Linux, macOS, Windows, and the BSDs with "
                 , b [] [ text "no VM, no runtime, no interpreter, no dependencies" ]
                 , text "."
                 ]
             , p []
                 [ text "Everything is configured in "
-                , a [ href "https://dhall-lang.org/" ] [ code [] [ text "Dhall" ] ]
+                , a [ href "https://dhall-lang.org/" ] [ Fixpoint.Code.inline "Dhall" ]
                 , text ", a strongly-typed, total configuration language. Configs are typechecked, normalized, and "
                 , em [] [ text "terminate" ]
                 , text " — they are programs, not property files."
                 ]
             , p []
                 [ text "The name comes from the two ideas at the heart of the stack:" ]
-            , div [ class "grid" ]
-                [ div [ class "card" ]
-                    [ span [ class "n" ] [ text "01" ]
-                    , h3 [] [ text "Fixpoint" ]
-                    , p []
+            , Fixpoint.Grid.grid
+                [ Fixpoint.Card.view
+                    { n = "01"
+                    , title = "Fixpoint"
+                    , body =
                         [ text "The least-fixed-point semantics of "
                         , a [ href "https://en.wikipedia.org/wiki/Datalog" ] [ text "Datalog" ]
                         , text "; a system is its own build artifact, deterministic and reproducible."
                         ]
-                    ]
-                , div [ class "card" ]
-                    [ span [ class "n" ] [ text "02" ]
-                    , h3 [] [ text "DAFSA" ]
-                    , p []
+                    }
+                , Fixpoint.Card.view
+                    { n = "02"
+                    , title = "DAFSA"
+                    , body =
                         [ text "The "
                         , a [ href "https://en.wikipedia.org/wiki/Deterministic_acyclic_finite_state_automaton" ]
                             [ text "minimal acyclic finite-state automaton" ]
                         , text " that backs the data stores: compact, exact, fast."
                         ]
-                    ]
+                    }
                 ]
             ]
-        ]
+        }
 
 
 
@@ -220,27 +226,19 @@ ideaSection =
 
 timeSection : Html Msg
 timeSection =
-    section [ id "time" ]
-        [ div [ class "wrap" ]
-            [ h2 [] [ text "A system that never forgets itself" ]
-            , div [ class "hint" ] [ text "// dl_publish_snapshot · dl_snapshot_versions · dl_query_version" ]
-            , p []
-                [ code [] [ text "fixpoint-linux" ]
+    Fixpoint.Section.view
+        { id = "time"
+        , title = "A system that never forgets itself"
+        , hint = "// dl_publish_snapshot · dl_snapshot_versions · dl_query_version"
+        , children =
+            [ p []
+                [ Fixpoint.Code.inline "fixpoint-linux"
                 , text " is "
                 , b [] [ text "content-addressed by construction and time-travelling by default" ]
                 , text ". Every change is one atomic snapshot of the whole system; the timeline is the system's complete history. Inspect any past state with an as-of query, roll back to any earlier point, and undo the rollback itself — without ever losing the record of what happened."
                 ]
-            , pre [ class "timeline" ]
-                ([ text "$ fx status\n" ]
-                    ++ timelineLine "v042" "2026-08-18 09:12:41 · activated · ok"
-                    ++ timelineLine "v041" "2026-08-17 22:04:09 · activated · ok"
-                    ++ timelineLine "v040" "2026-08-17 18:55:31 · rolled-forward to v042"
-                    ++ timelineLine "v039" "2026-08-16 11:02:17 · activated · ok"
-                    ++ [ text "...\n$ fx rollback v039   "
-                       , span [ class "dim" ] [ text "# record it as history, always undoable" ]
-                       ]
-                )
-            , ul [ class "checks" ]
+            , timelineBlock
+            , Fixpoint.Checks.view
                 [ li []
                     [ b [] [ text "Roll-forward rollbacks" ]
                     , text " — the timeline is an append-only ledger; going back is recorded as history and always undoable."
@@ -256,11 +254,29 @@ timeSection =
                 ]
             , p []
                 [ text "Powered by "
-                , code [] [ text "datalog-dafsa" ]
+                , Fixpoint.Code.inline "datalog-dafsa"
                 , text "'s native snapshot time-travel."
                 ]
             ]
-        ]
+        }
+
+
+{-| The `fx status` timeline pre block. There is no shared `Fixpoint` helper
+for the `.timeline` block (only `pre.code`), so it stays as hand-written Html
+using the `.timeline` classes from `Fixpoint.Style.stylesheet`.
+-}
+timelineBlock : Html Msg
+timelineBlock =
+    pre [ class "timeline" ]
+        ([ text "$ fx status\n" ]
+            ++ timelineLine "v042" "2026-08-18 09:12:41 · activated · ok"
+            ++ timelineLine "v041" "2026-08-17 22:04:09 · activated · ok"
+            ++ timelineLine "v040" "2026-08-17 18:55:31 · rolled-forward to v042"
+            ++ timelineLine "v039" "2026-08-16 11:02:17 · activated · ok"
+            ++ [ text "...\n$ fx rollback v039   "
+               , span [ class "dim" ] [ text "# record it as history, always undoable" ]
+               ]
+        )
 
 
 {-| One line of the `fx status` timeline: the version (accent) + trailing
@@ -281,11 +297,12 @@ timelineLine version note =
 
 stackSection : Html Msg
 stackSection =
-    section [ id "stack" ]
-        [ div [ class "wrap" ]
-            [ h2 [] [ text "The stack" ]
-            , div [ class "hint" ] [ text "// self-contained · portable · reproducible" ]
-            , table [ class "stack" ]
+    Fixpoint.Section.view
+        { id = "stack"
+        , title = "The stack"
+        , hint = "// self-contained · portable · reproducible"
+        , children =
+            [ table [ class "stack" ]
                 [ thead []
                     [ tr []
                         [ th [] [ text "Component" ]
@@ -305,15 +322,15 @@ stackSection =
                     , stackRow "dhall-c"
                         "https://github.com/fixpoint-linux/dhall-c"
                         [ text "A subset interpreter for Dhall, in C. "
-                        , code [] [ text "typecheck" ]
+                        , Fixpoint.Code.inline "typecheck"
                         , text ", "
-                        , code [] [ text "normalize" ]
+                        , Fixpoint.Code.inline "normalize"
                         , text ", "
-                        , code [] [ text "to-json" ]
+                        , Fixpoint.Code.inline "to-json"
                         , text "/"
-                        , code [] [ text "toml" ]
+                        , Fixpoint.Code.inline "toml"
                         , text "/"
-                        , code [] [ text "yaml" ]
+                        , Fixpoint.Code.inline "yaml"
                         , text ". The typed-config foundation everything builds on."
                         ]
                     , stackRow "datalog-dafsa"
@@ -326,9 +343,9 @@ stackSection =
                     , stackRow "dhake"
                         "https://github.com/fixpoint-linux/dhake"
                         [ text "A Make-like build tool whose buildfile is a Dhall program ("
-                        , code [] [ text "Dhakefile.dhall" ]
+                        , Fixpoint.Code.inline "Dhakefile.dhall"
                         , text "). Typed actions, incremental checks, phony targets, "
-                        , code [] [ text "-j" ]
+                        , Fixpoint.Code.inline "-j"
                         , text " parallel builds. "
                         , b [] [ text "Self-hosting" ]
                         , text " — it builds itself. "
@@ -338,9 +355,9 @@ stackSection =
                         "https://github.com/fixpoint-linux/fxstore"
                         [ b [] [ text "content-addressed build store" ]
                         , text " — reads a Dhall package set, computes the dependency closure as a least fixed point with "
-                        , code [] [ text "datalog-dafsa" ]
+                        , Fixpoint.Code.inline "datalog-dafsa"
                         , text ", and builds each package's typed recipe into "
-                        , code [] [ text "/fx/store/<hash>-<name>" ]
+                        , Fixpoint.Code.inline "/fx/store/<hash>-<name>"
                         , text ". Crash-consistent, bwrap-sandboxed. "
                         , a [ href "https://fixpoint-linux.github.io/fxstore/" ] [ text "Docs →" ]
                         ]
@@ -351,7 +368,7 @@ stackSection =
                     , stackRow "visage"
                         "https://github.com/fixpoint-linux/visage"
                         [ text "A compact email alias & forwarding server — disposable "
-                        , code [] [ text "alias@domain" ]
+                        , Fixpoint.Code.inline "alias@domain"
                         , text " addresses backed by a DAFSA store. Daemon and store in one small APE binary."
                         ]
                     , stackRow "dafsa"
@@ -367,10 +384,12 @@ stackSection =
                     ]
                 ]
             ]
-        ]
+        }
 
 
 {-| One row of the stack table: the monospace name link + the description cell.
+There is no shared `Fixpoint` helper for the `.stack` table, so it stays as
+hand-written Html using the `.stack` classes from `Fixpoint.Style.stylesheet`.
 -}
 stackRow : String -> String -> List (Html Msg) -> Html Msg
 stackRow name url descChildren =
@@ -386,43 +405,49 @@ stackRow name url descChildren =
 
 principlesSection : Html Msg
 principlesSection =
-    section [ id "principles" ]
-        [ div [ class "wrap" ]
-            [ h2 [] [ text "Design principles" ]
-            , div [ class "hint" ] [ text "// ethos" ]
-            , div [ class "grid" ]
-                [ principleCard "α" "One binary, zero deps"
-                    [ text "Cosmocc + APE means each tool is self-contained and portable across OSes."
-                    ]
-                , principleCard "β" "Config is typed code"
-                    [ text "Dhall gives typechecking, imports, and reusable functions — and it always terminates."
-                    ]
-                , principleCard "γ" "Logic is declarative"
-                    [ text "Datalog + DAFSA keep the data plane compact and exact."
-                    ]
-                , principleCard "δ" "Self-hosting"
-                    [ text "Tools build themselves — see "
-                    , code [] [ text "dhake" ]
-                    , text "'s self-hosting buildfile."
-                    ]
-                , principleCard "ε" "Content-addressed"
-                    [ text "Every artifact's store path is a hash of its inputs — the closure is the identity, so the same spec always builds the same thing."
-                    ]
-                , principleCard "ζ" "Small and legible"
-                    [ text "Each component fits in your head; none pulls in a framework or heavyweight runtime."
-                    ]
+    Fixpoint.Section.view
+        { id = "principles"
+        , title = "Design principles"
+        , hint = "// ethos"
+        , children =
+            [ Fixpoint.Grid.grid
+                [ Fixpoint.Card.view
+                    { n = "α"
+                    , title = "One binary, zero deps"
+                    , body = [ text "Cosmocc + APE means each tool is self-contained and portable across OSes." ]
+                    }
+                , Fixpoint.Card.view
+                    { n = "β"
+                    , title = "Config is typed code"
+                    , body = [ text "Dhall gives typechecking, imports, and reusable functions — and it always terminates." ]
+                    }
+                , Fixpoint.Card.view
+                    { n = "γ"
+                    , title = "Logic is declarative"
+                    , body = [ text "Datalog + DAFSA keep the data plane compact and exact." ]
+                    }
+                , Fixpoint.Card.view
+                    { n = "δ"
+                    , title = "Self-hosting"
+                    , body =
+                        [ text "Tools build themselves — see "
+                        , Fixpoint.Code.inline "dhake"
+                        , text "'s self-hosting buildfile."
+                        ]
+                    }
+                , Fixpoint.Card.view
+                    { n = "ε"
+                    , title = "Content-addressed"
+                    , body = [ text "Every artifact's store path is a hash of its inputs — the closure is the identity, so the same spec always builds the same thing." ]
+                    }
+                , Fixpoint.Card.view
+                    { n = "ζ"
+                    , title = "Small and legible"
+                    , body = [ text "Each component fits in your head; none pulls in a framework or heavyweight runtime." ]
+                    }
                 ]
             ]
-        ]
-
-
-principleCard : String -> String -> List (Html Msg) -> Html Msg
-principleCard n title bodyChildren =
-    div [ class "card" ]
-        [ span [ class "n" ] [ text n ]
-        , h3 [] [ text title ]
-        , p [] bodyChildren
-        ]
+        }
 
 
 
@@ -431,36 +456,37 @@ principleCard n title bodyChildren =
 
 designSection : Html Msg
 designSection =
-    section [ id "design" ]
-        [ div [ class "wrap" ]
-            [ h2 [] [ text "The system — read the design" ]
-            , div [ class "hint" ] [ text "// apex · spec + builds + store, all Dhall + Datalog + DAFSA" ]
-            , p []
+    Fixpoint.Section.view
+        { id = "design"
+        , title = "The system — read the design"
+        , hint = "// apex · spec + builds + store, all Dhall + Datalog + DAFSA"
+        , children =
+            [ p []
                 [ text "The org's apex is the "
-                , code [] [ text "fixpoint-linux" ]
+                , Fixpoint.Code.inline "fixpoint-linux"
                 , text " distro itself: a self-hosting Linux system whose spec, builds, and store are all Dhall + Datalog + DAFSA — content-addressed by construction."
                 ]
-            , pre [ class "code" ]
-                [ span [ class "c" ] [ text "# build the Dhall interpreter, then the self-hosting build tool" ]
+            , Fixpoint.Code.block
+                [ Fixpoint.Code.c "# build the Dhall interpreter, then the self-hosting build tool"
                 , text "\n"
-                , span [ class "k" ] [ text "$" ]
+                , Fixpoint.Code.k "$"
                 , text " "
-                , span [ class "g" ] [ text "cd" ]
+                , Fixpoint.Code.g "cd"
                 , text " dhall-c && make && make test   "
-                , span [ class "c" ] [ text "# builds dhall.com (APE) + runs the test suite" ]
+                , Fixpoint.Code.c "# builds dhall.com (APE) + runs the test suite"
                 , text "\n"
-                , span [ class "k" ] [ text "$" ]
+                , Fixpoint.Code.k "$"
                 , text " "
-                , span [ class "g" ] [ text "cd" ]
+                , Fixpoint.Code.g "cd"
                 , text " dhake   && make                "
-                , span [ class "c" ] [ text "# self-hosting: builds dhake.com from its Dhakefile.dhall" ]
+                , Fixpoint.Code.c "# self-hosting: builds dhake.com from its Dhakefile.dhall"
                 ]
             , p []
                 [ a [ href "https://github.com/fixpoint-linux/fixpoint-linux/blob/main/DESIGN.md" ]
                     [ text "👉 Read the full architecture design" ]
                 ]
             ]
-        ]
+        }
 
 
 
@@ -469,13 +495,11 @@ designSection =
 
 footerView : Html Msg
 footerView =
-    footer []
-        [ div [ class "wrap" ]
-            [ a [ href "https://github.com/fixpoint-linux" ]
-                [ text "github.com/fixpoint-linux" ]
-            , span [ class "sep" ] [ text " · " ]
-            , text "built with ❤️ and a single "
-            , code [] [ text "cosmocc" ]
-            , text " invocation"
-            ]
+    Fixpoint.Footer.view
+        [ a [ href "https://github.com/fixpoint-linux" ]
+            [ text "github.com/fixpoint-linux" ]
+        , Fixpoint.Footer.sep
+        , text "built with ❤️ and a single "
+        , Fixpoint.Code.inline "cosmocc"
+        , text " invocation"
         ]
