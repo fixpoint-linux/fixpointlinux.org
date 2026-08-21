@@ -30,7 +30,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build the site (dhake: elm + MFE vendor + SSG)
+      - name: "Build the site (dhake: elm + MFE vendor + SSG)"
         # The build is driven by dhake (./Dhakefile.dhall). `npm ci` above
         # provides the tooling dhake shells out to (elm, happy-dom, tsc in the
         # mfe-framework submodule). dhake.com is the committed bootstrap binary
