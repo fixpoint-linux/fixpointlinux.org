@@ -14,6 +14,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # design, mfe-framework and dhake are git submodules and the build
+          # needs them checked out. (Previously submodules were not fetched, so
+          # `mfe-framework/` was empty and the old `npm run build` recursed
+          # into the site's own build script forever -> E2BIG.)
+          submodules: true
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -24,8 +30,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build the site (elm + SSG)
-        run: npm run build
+      - name: Build the site (dhake: elm + MFE vendor + SSG)
+        # The build is driven by dhake (./Dhakefile.dhall). `npm ci` above
+        # provides the tooling dhake shells out to (elm, happy-dom, tsc in the
+        # mfe-framework submodule). dhake.com is the committed bootstrap binary
+        # shipped with the dhake submodule.
+        run: ./dhake/dhake.com
 
       - name: Assemble deploy bundle
         run: |
