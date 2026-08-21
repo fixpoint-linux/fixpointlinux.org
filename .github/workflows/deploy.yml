@@ -37,7 +37,7 @@ jobs:
           tar -czf /tmp/sitebundle/site.tar.gz -C /tmp/sitebundle site
           ls -la /tmp/sitebundle/site.tar.gz
 
-      - name: Deploy to [REDACTED] via restricted SSH
+      - name: Deploy site via restricted SSH
         env:
           DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
