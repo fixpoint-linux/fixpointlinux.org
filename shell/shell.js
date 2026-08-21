@@ -11,8 +11,15 @@ import { createApp } from '@mfe/framework';
 
 const app = await createApp({
   root: document.getElementById('app'),
-  routes: [{ path: '/', template: 'fixpoint', name: 'home' }],
+  routes: [
+    { path: '/', template: 'fixpoint', name: 'home' },
+    { path: '/dhake', template: 'dhake', name: 'dhake' },
+  ],
   baseURL: '/shell/templates',
+  // The SSG output only pre-renders the home route; a deep link/refresh on a
+  // remote route must do a fresh client render instead of rehydrating the
+  // pre-rendered home DOM into the wrong route.
+  ssr: window.location.pathname === '/',
 });
 
 // Expose the app handle so the shell/host can inspect or drive it later.

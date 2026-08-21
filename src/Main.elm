@@ -122,7 +122,7 @@ navView =
                 { toggle = "components ▾"
                 , items =
                     [ Fixpoint.Nav.menuItemFx "https://fixpoint-linux.github.io/datalog-dafsa/" "datalog-dafsa"
-                    , Fixpoint.Nav.menuItemClass "ddhake" "https://fixpoint-linux.github.io/dhake/" "dhake →"
+                    , Fixpoint.Nav.menuItemClass "ddhake" "/dhake" "dhake →"
                     , Fixpoint.Nav.menuItemClass "dfxstore" "https://fixpoint-linux.github.io/fxstore/" "fxstore →"
                     , Fixpoint.Nav.menuItem "https://github.com/fixpoint-linux/dhall-c" "dhall-c"
                     , Fixpoint.Nav.menuItem "https://github.com/fixpoint-linux/dafsa" "dafsa"
