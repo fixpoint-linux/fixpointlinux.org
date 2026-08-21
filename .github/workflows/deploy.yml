@@ -1,0 +1,57 @@
+name: Deploy site
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: deploy-site
+      cancel-in-progress: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build the site (elm + SSG)
+        run: npm run build
+
+      - name: Assemble deploy bundle
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/sitebundle
+          mkdir -p /tmp/sitebundle/site
+          cp index.html /tmp/sitebundle/site/
+          cp -r shell vendor dist /tmp/sitebundle/site/
+          tar -czf /tmp/sitebundle/site.tar.gz -C /tmp/sitebundle site
+          ls -la /tmp/sitebundle/site.tar.gz
+
+      - name: Deploy to [REDACTED] via restricted SSH
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_HOST_KEY: ${{ secrets.DEPLOY_HOST_KEY }}
+        run: |
+          set -euo pipefail
+          umask 077
+          mkdir -p ~/.ssh
+          echo "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          echo "$DEPLOY_HOST_KEY" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/deploy_key ~/.ssh/known_hosts
+          cat /tmp/sitebundle/site.tar.gz | ssh -i ~/.ssh/deploy_key \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes \
+            -o UserKnownHostsFile=~/.ssh/known_hosts \
+            "${DEPLOY_USER}@${DEPLOY_HOST}" 'cat > /dev/null'
