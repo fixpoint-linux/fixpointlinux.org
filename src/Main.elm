@@ -39,7 +39,7 @@ import Fixpoint.Nav
 import Fixpoint.Section
 import Fixpoint.Style
 import Html exposing (Html, a, b, div, em, li, p, pre, span, table, tbody, td, text, th, thead, tr)
-import Html.Attributes exposing (class, href)
+import Html.Attributes exposing (attribute, class, href)
 
 
 main : Program () Model Msg
@@ -122,7 +122,8 @@ navView =
                 { toggle = "components ▾"
                 , items =
                     [ Fixpoint.Nav.menuItemFx "https://fixpoint-linux.github.io/datalog-dafsa/" "datalog-dafsa"
-                    , Fixpoint.Nav.menuItemClass "ddhake" "/dhake" "dhake →"
+                    , a [ class "ddhake", href "https://dhake.fixpointlinux.org/", attribute "data-mfe-route" "/dhake" ]
+                        [ text "dhake →" ]
                     , Fixpoint.Nav.menuItemClass "dfxstore" "https://fixpoint-linux.github.io/fxstore/" "fxstore →"
                     , Fixpoint.Nav.menuItem "https://github.com/fixpoint-linux/dhall-c" "dhall-c"
                     , Fixpoint.Nav.menuItem "https://github.com/fixpoint-linux/dafsa" "dafsa"
