@@ -127,7 +127,8 @@ navView =
                         [ text "dhake →" ]
                     , a [ class "dfxstore", href "https://fixpointlinux.org/fxstore/", attribute "data-mfe-route" "/fxstore" ]
                         [ text "fxstore →" ]
-                    , Fixpoint.Nav.menuItem "https://github.com/fixpoint-linux/dhall-c" "dhall-c"
+                    , a [ class "ddhallc", href "https://fixpointlinux.org/dhall-c/", attribute "data-mfe-route" "/dhall-c" ]
+                        [ text "dhall-c →" ]
                     , Fixpoint.Nav.menuItem "https://github.com/fixpoint-linux/dafsa" "dafsa"
                     , Fixpoint.Nav.menuItem "https://github.com/fixpoint-linux/compendium" "compendium"
                     , Fixpoint.Nav.menuItem "https://github.com/fixpoint-linux/visage" "visage"
@@ -334,7 +335,8 @@ stackSection =
                         , Fixpoint.Code.inline "toml"
                         , text "/"
                         , Fixpoint.Code.inline "yaml"
-                        , text ". The typed-config foundation everything builds on."
+                        , text ". The typed-config foundation everything builds on. "
+                        , a [ href "https://fixpointlinux.org/dhall-c/", attribute "data-mfe-route" "/dhall-c" ] [ text "Docs →" ]
                         ]
                     , stackRow "datalog-dafsa"
                         "https://github.com/fixpoint-linux/datalog-dafsa"
