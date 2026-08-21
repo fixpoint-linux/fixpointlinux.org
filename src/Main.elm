@@ -122,7 +122,7 @@ navView =
                 { toggle = "components ▾"
                 , items =
                     [ Fixpoint.Nav.menuItemFx "https://fixpoint-linux.github.io/datalog-dafsa/" "datalog-dafsa"
-                    , a [ class "ddhake", href "https://dhake.fixpointlinux.org/", attribute "data-mfe-route" "/dhake" ]
+                    , a [ class "ddhake", href "https://fixpointlinux.org/dhake/", attribute "data-mfe-route" "/dhake" ]
                         [ text "dhake →" ]
                     , Fixpoint.Nav.menuItemClass "dfxstore" "https://fixpoint-linux.github.io/fxstore/" "fxstore →"
                     , Fixpoint.Nav.menuItem "https://github.com/fixpoint-linux/dhall-c" "dhall-c"
@@ -350,7 +350,7 @@ stackSection =
                         , text " parallel builds. "
                         , b [] [ text "Self-hosting" ]
                         , text " — it builds itself. "
-                        , a [ href "https://dhake.fixpointlinux.org/" ] [ text "Docs →" ]
+                        , a [ href "https://fixpointlinux.org/dhake/" ] [ text "Docs →" ]
                         ]
                     , stackRow "fxstore"
                         "https://github.com/fixpoint-linux/fxstore"
