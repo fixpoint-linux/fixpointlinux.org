@@ -108,6 +108,8 @@ navView =
                             [ span [ class "fx" ] [ text "datalog-dafsa" ], text " →" ]
                         , a [ class "ddhake", href "https://fixpoint-linux.github.io/dhake/" ]
                             [ text "dhake →" ]
+                        , a [ class "dfxstore", href "https://fixpoint-linux.github.io/fxstore/" ]
+                            [ text "fxstore →" ]
                         , a [ href "https://github.com/fixpoint-linux/dhall-c" ]
                             [ text "dhall-c" ]
                         , a [ href "https://github.com/fixpoint-linux/dafsa" ]
@@ -331,6 +333,16 @@ stackSection =
                         , b [] [ text "Self-hosting" ]
                         , text " — it builds itself. "
                         , a [ href "https://fixpoint-linux.github.io/dhake/" ] [ text "Docs →" ]
+                        ]
+                    , stackRow "fxstore"
+                        "https://github.com/fixpoint-linux/fxstore"
+                        [ b [] [ text "content-addressed build store" ]
+                        , text " — reads a Dhall package set, computes the dependency closure as a least fixed point with "
+                        , code [] [ text "datalog-dafsa" ]
+                        , text ", and builds each package's typed recipe into "
+                        , code [] [ text "/fx/store/<hash>-<name>" ]
+                        , text ". Crash-consistent, bwrap-sandboxed. "
+                        , a [ href "https://fixpoint-linux.github.io/fxstore/" ] [ text "Docs →" ]
                         ]
                     , stackRow "compendium"
                         "https://github.com/fixpoint-linux/compendium"
