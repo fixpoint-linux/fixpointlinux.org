@@ -349,7 +349,7 @@ stackSection =
                         , text " parallel builds. "
                         , b [] [ text "Self-hosting" ]
                         , text " — it builds itself. "
-                        , a [ href "https://fixpoint-linux.github.io/dhake/" ] [ text "Docs →" ]
+                        , a [ href "https://dhake.fixpointlinux.org/" ] [ text "Docs →" ]
                         ]
                     , stackRow "fxstore"
                         "https://github.com/fixpoint-linux/fxstore"
