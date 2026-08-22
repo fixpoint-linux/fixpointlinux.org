@@ -26,6 +26,12 @@ const app = await createApp({
     { path: '/datalog-dafsa/order-statistics', template: 'dafsa-order-statistics', name: 'dafsa-order-statistics' },
     { path: '/datalog-dafsa/typed-projects', template: 'dafsa-typed-projects', name: 'dafsa-typed-projects' },
     { path: '/datalog-dafsa/playground', template: 'dafsa-playground', name: 'dafsa-playground' },
+    { path: '/visage', template: 'visage-landing', name: 'visage-landing' },
+    { path: '/visage/compactness', template: 'visage-compactness', name: 'visage-compactness' },
+    { path: '/visage/security', template: 'visage-security', name: 'visage-security' },
+    { path: '/visage/config', template: 'visage-config', name: 'visage-config' },
+    { path: '/visage/cli', template: 'visage-cli', name: 'visage-cli' },
+    { path: '/visage/playground', template: 'visage-playground', name: 'visage-playground' },
   ],
   baseURL: '/shell/templates',
   // The SSG output only pre-renders the home route; a deep link/refresh on a

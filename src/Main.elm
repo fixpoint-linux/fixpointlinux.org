@@ -133,7 +133,8 @@ navView =
                         [ text "dafsa →" ]
                     , a [ class "dcompendium", href "https://fixpointlinux.org/compendium/", attribute "data-mfe-route" "/compendium" ]
                         [ text "compendium →" ]
-                    , Fixpoint.Nav.menuItem "https://github.com/fixpoint-linux/visage" "visage"
+                    , a [ class "dvisage", href "https://fixpointlinux.org/visage/", attribute "data-mfe-route" "/visage" ]
+                        [ text "visage →" ]
                     , Fixpoint.Nav.menuItem "https://github.com/fixpoint-linux/shen-meta" "shen-meta"
                     , Fixpoint.Nav.menuItem "https://github.com/fixpoint-linux/fixpoint-linux" "fixpoint-linux"
                     ]
@@ -377,7 +378,8 @@ stackSection =
                         "https://github.com/fixpoint-linux/visage"
                         [ text "A compact email alias & forwarding server — disposable "
                         , Fixpoint.Code.inline "alias@domain"
-                        , text " addresses backed by a DAFSA store. Daemon and store in one small APE binary."
+                        , text " addresses backed by a DAFSA store. Daemon and store in one small APE binary. "
+                        , a [ href "https://fixpointlinux.org/visage/", attribute "data-mfe-route" "/visage" ] [ text "Docs →" ]
                         ]
                     , stackRow "dafsa"
                         "https://github.com/fixpoint-linux/dafsa"
