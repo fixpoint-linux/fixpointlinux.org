@@ -32,6 +32,11 @@ const app = await createApp({
     { path: '/visage/config', template: 'visage-config', name: 'visage-config' },
     { path: '/visage/cli', template: 'visage-cli', name: 'visage-cli' },
     { path: '/visage/playground', template: 'visage-playground', name: 'visage-playground' },
+    { path: '/shen', template: 'shen-landing', name: 'shen-landing' },
+    { path: '/shen/architecture', template: 'shen-architecture', name: 'shen-architecture' },
+    { path: '/shen/build', template: 'shen-build', name: 'shen-build' },
+    { path: '/shen/primitives', template: 'shen-primitives', name: 'shen-primitives' },
+    { path: '/shen/playground', template: 'shen-playground', name: 'shen-playground' },
   ],
   baseURL: '/shell/templates',
   // The SSG output only pre-renders the home route; a deep link/refresh on a

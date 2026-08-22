@@ -135,7 +135,8 @@ navView =
                         [ text "compendium →" ]
                     , a [ class "dvisage", href "https://fixpointlinux.org/visage/", attribute "data-mfe-route" "/visage" ]
                         [ text "visage →" ]
-                    , Fixpoint.Nav.menuItem "https://github.com/fixpoint-linux/shen-meta" "shen-meta"
+                    , a [ class "dshen", href "https://fixpointlinux.org/shen/", attribute "data-mfe-route" "/shen" ]
+                        [ text "shen-meta →" ]
                     , Fixpoint.Nav.menuItem "https://github.com/fixpoint-linux/fixpoint-linux" "fixpoint-linux"
                     ]
                 }
@@ -391,6 +392,7 @@ stackSection =
                         [ text "A self-hosted Shen implementation — a "
                         , b [] [ text "sequent-calculus Lisp" ]
                         , text ". Evaluates itself, compiles itself to native bytecode, runs on a native C VM with a custom GC."
+                        , a [ href "https://fixpointlinux.org/shen/", attribute "data-mfe-route" "/shen" ] [ text "Docs →" ]
                         ]
                     ]
                 ]
