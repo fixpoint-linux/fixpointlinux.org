@@ -37,6 +37,12 @@ const app = await createApp({
     { path: '/shen/build', template: 'shen-build', name: 'shen-build' },
     { path: '/shen/primitives', template: 'shen-primitives', name: 'shen-primitives' },
     { path: '/shen/playground', template: 'shen-playground', name: 'shen-playground' },
+    { path: '/fx-init', template: 'fx-init-landing', name: 'fx-init-landing' },
+    { path: '/fx-init/boot', template: 'fx-init-boot', name: 'fx-init-boot' },
+    { path: '/fx-init/supervise', template: 'fx-init-supervise', name: 'fx-init-supervise' },
+    { path: '/fx-init/activate', template: 'fx-init-activate', name: 'fx-init-activate' },
+    { path: '/fx-init/fxctl', template: 'fx-init-fxctl', name: 'fx-init-fxctl' },
+    { path: '/fx-init/logs', template: 'fx-init-logs', name: 'fx-init-logs' },
   ],
   baseURL: '/shell/templates',
   // The SSG output only pre-renders the home route; a deep link/refresh on a

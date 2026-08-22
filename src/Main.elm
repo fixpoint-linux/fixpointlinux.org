@@ -137,6 +137,8 @@ navView =
                         [ text "visage →" ]
                     , a [ class "dshen", href "https://fixpointlinux.org/shen/", attribute "data-mfe-route" "/shen" ]
                         [ text "shen-meta →" ]
+                    , a [ class "dfxinit", href "https://fixpointlinux.org/fx-init/", attribute "data-mfe-route" "/fx-init" ]
+                        [ text "fx-init →" ]
                     , Fixpoint.Nav.menuItem "https://github.com/fixpoint-linux/fixpoint-linux" "fixpoint-linux"
                     ]
                 }
@@ -393,6 +395,18 @@ stackSection =
                         , b [] [ text "sequent-calculus Lisp" ]
                         , text ". Evaluates itself, compiles itself to native bytecode, runs on a native C VM with a custom GC."
                         , a [ href "https://fixpointlinux.org/shen/", attribute "data-mfe-route" "/shen" ] [ text "Docs →" ]
+                        ]
+                    , stackRow "fx-init"
+                        "https://github.com/fixpoint-linux/fx-init"
+                        [ b [] [ text "The running system" ]
+                        , text " — a lean PID1/supervisor. Reads the store generation, boots the rootfs via "
+                        , Fixpoint.Code.inline "dhake"
+                        , text ", supervises services (readiness + health, restart, backoff), and maintains the live runtime datalog DB. "
+                        , Fixpoint.Code.inline "fx-activate"
+                        , text " activates a generation; "
+                        , Fixpoint.Code.inline "fxctl"
+                        , text " queries and controls over a datalog socket."
+                        , a [ href "https://fixpointlinux.org/fx-init/", attribute "data-mfe-route" "/fx-init" ] [ text "Docs →" ]
                         ]
                     ]
                 ]
