@@ -89,9 +89,9 @@ view _ =
         [ Fixpoint.Style.stylesheet
         , navView
         , headerView
+        , timeSection
         , demoSection
         , ideaSection
-        , timeSection
         , stackSection
         , principlesSection
         , designSection
