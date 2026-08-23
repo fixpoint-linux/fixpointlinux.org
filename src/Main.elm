@@ -39,7 +39,7 @@ import Fixpoint.Nav
 import Fixpoint.Section
 import Fixpoint.Style
 import Html exposing (Html, a, b, div, em, li, p, pre, span, table, tbody, td, text, th, thead, tr)
-import Html.Attributes exposing (attribute, class, href)
+import Html.Attributes exposing (attribute, class, href, id)
 
 
 main : Program () Model Msg
@@ -89,6 +89,7 @@ view _ =
         [ Fixpoint.Style.stylesheet
         , navView
         , headerView
+        , demoSection
         , ideaSection
         , timeSection
         , stackSection
@@ -139,8 +140,6 @@ navView =
                         [ text "shen-meta →" ]
                     , a [ class "dfxinit", href "https://fixpointlinux.org/fx-init/", attribute "data-mfe-route" "/fx-init" ]
                         [ text "fx-init →" ]
-                    , a [ class "dfxinit", href "https://fixpointlinux.org/fx-init/demo/", attribute "data-mfe-route" "/fx-init/demo" ]
-                        [ text "fx-init demo →" ]
                     , Fixpoint.Nav.menuItem "https://github.com/fixpoint-linux/fixpoint-linux" "fixpoint-linux"
                     ]
                 }
@@ -171,6 +170,49 @@ headerView =
             [ text "deterministically built, "
             , b [] [ text "from source, by itself" ]
             , text "."
+            ]
+        }
+
+
+
+-- Section: #demo (the live in-browser terminal)
+
+
+{-| The live fx-init demo, front and center under the hero.
+
+The `#fx-demo-mount` div is deliberately an EMPTY mount point: it is plain
+HTML that Elm renders once and never touches again. The terminal itself is a
+non-Elm `@mfe` module deployed with the fx-init site (`/fx-init/shell/mfe/
+fx-init-demo.js`, same origin) — `shell/shell.js` imports it client-side and
+mounts it into this div, and re-mounts it whenever a fresh empty container
+appears (the landing MFE is re-created on SPA navigation back to `/`).
+Rendering any Elm content inside the container would be clobbered by the
+MFE's own DOM, so it must stay empty here — no attributes beyond the id, no
+children, no `data-mfe` (the demo is mounted from the shell, not reconciled).
+-}
+demoSection : Html Msg
+demoSection =
+    Fixpoint.Section.view
+        { id = "demo"
+        , title = "Try it — fixpoint-linux, live in your browser"
+        , hint = "// fxstore · fx-activate · fxctl · dhall — the real CLIs, compiled to wasm"
+        , children =
+            [ p []
+                [ text "No screencast, no server round-trip: the terminal below runs the real "
+                , Fixpoint.Code.inline "fxstore"
+                , text ", "
+                , Fixpoint.Code.inline "fx-activate"
+                , text ", "
+                , Fixpoint.Code.inline "fxctl"
+                , text " and "
+                , Fixpoint.Code.inline "dhall"
+                , text " binaries — compiled to WebAssembly — building and activating an in-memory "
+                , Fixpoint.Code.inline "/fx/store"
+                , text " inside this page. When the boot log settles, the prompt is live; type "
+                , Fixpoint.Code.inline "help"
+                , text "."
+                ]
+            , div [ id "fx-demo-mount" ] []
             ]
         }
 
@@ -409,8 +451,6 @@ stackSection =
                         , Fixpoint.Code.inline "fxctl"
                         , text " queries and controls over a datalog socket."
                         , a [ href "https://fixpointlinux.org/fx-init/", attribute "data-mfe-route" "/fx-init" ] [ text "Docs →" ]
-                        , text " "
-                        , a [ href "https://fixpointlinux.org/fx-init/demo/", attribute "data-mfe-route" "/fx-init/demo" ] [ text "Demo →" ]
                         ]
                     ]
                 ]
