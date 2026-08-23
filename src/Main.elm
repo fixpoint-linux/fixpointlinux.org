@@ -139,6 +139,8 @@ navView =
                         [ text "shen-meta →" ]
                     , a [ class "dfxinit", href "https://fixpointlinux.org/fx-init/", attribute "data-mfe-route" "/fx-init" ]
                         [ text "fx-init →" ]
+                    , a [ class "dfxinit", href "https://fixpointlinux.org/fx-init/demo/", attribute "data-mfe-route" "/fx-init/demo" ]
+                        [ text "fx-init demo →" ]
                     , Fixpoint.Nav.menuItem "https://github.com/fixpoint-linux/fixpoint-linux" "fixpoint-linux"
                     ]
                 }
@@ -407,6 +409,8 @@ stackSection =
                         , Fixpoint.Code.inline "fxctl"
                         , text " queries and controls over a datalog socket."
                         , a [ href "https://fixpointlinux.org/fx-init/", attribute "data-mfe-route" "/fx-init" ] [ text "Docs →" ]
+                        , text " "
+                        , a [ href "https://fixpointlinux.org/fx-init/demo/", attribute "data-mfe-route" "/fx-init/demo" ] [ text "Demo →" ]
                         ]
                     ]
                 ]
