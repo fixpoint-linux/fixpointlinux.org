@@ -44,6 +44,14 @@
   }
 }
 </script>
+<style>
+/* Per-site accent for the <site> dropdown links, matching the rules the
+   Fixpoint design system carries for the other components (.ddafsa, .ddhake,
+   …). The shared stylesheet lives in the page body (emitted by
+   Fixpoint.Style.stylesheet), so this needs the extra element in the selector
+   to win the cascade for the fx-core link. */
+.dropdown .menu a.dfxcore { color: var(--accent); font-weight: 600; }
+</style>
 </head>
 <body>
 <div id="app" ssr>

@@ -140,6 +140,8 @@ navView =
                         [ text "shen-meta →" ]
                     , a [ class "dfxinit", href "https://fixpointlinux.org/fx-init/", attribute "data-mfe-route" "/fx-init" ]
                         [ text "fx-init →" ]
+                    , a [ class "dfxcore", href "https://fixpointlinux.org/fx-core/", attribute "data-mfe-route" "/fx-core" ]
+                        [ text "fx-core →" ]
                     , Fixpoint.Nav.menuItem "https://github.com/fixpoint-linux/fixpoint-linux" "fixpoint-linux"
                     ]
                 }
