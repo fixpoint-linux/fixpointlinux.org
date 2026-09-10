@@ -439,7 +439,7 @@ stackSection =
                         "https://github.com/fixpoint-linux/shen-meta"
                         [ text "A self-hosted Shen implementation — a "
                         , b [] [ text "sequent-calculus Lisp" ]
-                        , text ". Evaluates itself, compiles itself to native bytecode, runs on a native C VM with a custom GC."
+                        , text ". Evaluates itself, compiles itself to native bytecode, runs on a native C VM with a custom GC. "
                         , a [ href "https://fixpointlinux.org/shen/", attribute "data-mfe-route" "/shen" ] [ text "Docs →" ]
                         ]
                     , stackRow "fx-init"
@@ -451,8 +451,18 @@ stackSection =
                         , Fixpoint.Code.inline "fx-activate"
                         , text " activates a generation; "
                         , Fixpoint.Code.inline "fxctl"
-                        , text " queries and controls over a datalog socket."
+                        , text " queries and controls over a datalog socket. "
                         , a [ href "https://fixpointlinux.org/fx-init/", attribute "data-mfe-route" "/fx-init" ] [ text "Docs →" ]
+                        ]
+                    , stackRow "fx-core"
+                        "https://github.com/fixpoint-linux/fx-core"
+                        [ b [] [ text "The coreutils" ]
+                        , text " — not a port of GNU/BSD coreutils but the same commands re-expressed in the fixpoint style: Dhall-typed arguments, Datalog/DAFSA relations, deterministic by construction. "
+                        , b [] [ text "Define the CLI once, in Dhall" ]
+                        , text " — one schema per command generates both the typed record form and the POSIX surface, so the "
+                        , Fixpoint.Code.inline "fx-compose"
+                        , text " pipeline and every command stay in step. "
+                        , a [ href "https://fixpointlinux.org/fx-core/", attribute "data-mfe-route" "/fx-core" ] [ text "Docs →" ]
                         ]
                     ]
                 ]
