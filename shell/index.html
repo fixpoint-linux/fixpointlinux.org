@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>fixpoint-linux — a system that never forgets itself</title>
-<meta name="description" content="fixpoint-linux: a Linux system that is a fixed point — deterministically built, from source, by itself. Content-addressed by construction, time-travelling by default.">
+<title>fixpoint-linux — boot it in QEMU</title>
+<meta name="description" content="fixpoint-linux in QEMU: download a 64 MiB image, run one command, and boot — from zero to fx-init: boot-ok v3.">
 <script type="importmap">
 {
   "imports": {
@@ -45,12 +45,8 @@
 }
 </script>
 <style>
-/* Per-site accent for the <site> dropdown links, matching the rules the
-   Fixpoint design system carries for the other components (.ddafsa, .ddhake,
-   …). The shared stylesheet lives in the page body (emitted by
-   Fixpoint.Style.stylesheet), so this needs the extra element in the selector
-   to win the cascade for the fx-core link. */
-.dropdown .menu a.dfxcore { color: var(--accent); font-weight: 600; }
+/* The release URL in #get is longer than the code column — let it wrap. */
+pre.code { white-space: pre-wrap; overflow-wrap: anywhere; }
 </style>
 </head>
 <body>

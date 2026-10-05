@@ -2,10 +2,10 @@ module Main exposing (main)
 
 {-| The fixpoint-linux landing page as a plain `Browser.element` app.
 
-This module renders the _entire_ landing page content (top nav + components
-dropdown, hero, and the `#idea` / `#time` / `#stack` / `#principles` /
-`#design` sections plus footer) into whatever node it is mounted in, using the
-shared `Fixpoint.*` design package (`design/src` is a source-directory in this
+This module renders the _entire_ landing page content — a single-purpose
+QEMU quickstart: nav, hero, and the `#get` / `#boot` / `#inside` / `#build`
+sections plus footer — into whatever node it is mounted in, using the shared
+`Fixpoint.*` design package (`design/src` is a source-directory in this
 application's `elm.json`).
 
 The first child of the view is `Fixpoint.Style.stylesheet`, which emits the
@@ -22,15 +22,14 @@ It is used in two places with identical rendering:
     `[data-mfe="fixpoint-landing"]` slot via the same `Elm.Main.init({ node })`.
 
 Because the model is unit and there are no messages, the app has no
-interactivity: everything that looks interactive (the hover dropdown, the
-blinking cursor) is pure CSS. Keeping it this simple makes the SSR seam
-trivial and robust.
+interactivity: everything that looks interactive (the blinking cursor) is pure
+CSS. Keeping it this simple makes the SSR seam trivial and robust.
 
 -}
 
 import Browser
+import Fixpoint.Callout
 import Fixpoint.Card
-import Fixpoint.Checks
 import Fixpoint.Code
 import Fixpoint.Footer
 import Fixpoint.Grid
@@ -38,8 +37,8 @@ import Fixpoint.Hero
 import Fixpoint.Nav
 import Fixpoint.Section
 import Fixpoint.Style
-import Html exposing (Html, a, b, div, em, li, p, pre, span, table, tbody, td, text, th, thead, tr)
-import Html.Attributes exposing (attribute, class, href, id)
+import Html exposing (Html, a, b, div, em, p, span, text)
+import Html.Attributes exposing (class, href)
 
 
 main : Program () Model Msg
@@ -89,18 +88,16 @@ view _ =
         [ Fixpoint.Style.stylesheet
         , navView
         , headerView
-        , timeSection
-        , demoSection
-        , ideaSection
-        , stackSection
-        , principlesSection
-        , designSection
+        , getSection
+        , bootSection
+        , insideSection
+        , buildSection
         , footerView
         ]
 
 
 
--- Top nav (brand + anchor links + "components" hover dropdown)
+-- Top nav (brand + anchor links + the org `home` link)
 
 
 navView : Html Msg
@@ -112,39 +109,15 @@ navView =
                 , text "://fixpoint-linux"
                 ]
         , links =
-            [ Fixpoint.Nav.link "#idea" "idea"
-            , Fixpoint.Nav.link "#time" "time"
-            , Fixpoint.Nav.link "#stack" "stack"
-            , Fixpoint.Nav.link "#principles" "principles"
-            , Fixpoint.Nav.link "#design" "design"
+            [ Fixpoint.Nav.link "#get" "get"
+            , Fixpoint.Nav.link "#boot" "boot"
+            , Fixpoint.Nav.link "#inside" "inside"
+            , Fixpoint.Nav.link "#build" "build"
             ]
         , extra =
-            [ Fixpoint.Nav.dropdown
-                { toggle = "components ▾"
-                , items =
-                    [ a [ class "ddafsa", href "https://fixpointlinux.org/datalog-dafsa/", attribute "data-mfe-route" "/datalog-dafsa" ]
-                        [ text "datalog-dafsa →" ]
-                    , a [ class "ddhake", href "https://fixpointlinux.org/dhake/", attribute "data-mfe-route" "/dhake" ]
-                        [ text "dhake →" ]
-                    , a [ class "dfxstore", href "https://fixpointlinux.org/fxstore/", attribute "data-mfe-route" "/fxstore" ]
-                        [ text "fxstore →" ]
-                    , a [ class "ddhallc", href "https://fixpointlinux.org/dhall-c/", attribute "data-mfe-route" "/dhall-c" ]
-                        [ text "dhall-c →" ]
-                    , a [ class "ddafsa", href "https://fixpointlinux.org/dafsa/", attribute "data-mfe-route" "/dafsa" ]
-                        [ text "dafsa →" ]
-                    , a [ class "dcompendium", href "https://fixpointlinux.org/compendium/", attribute "data-mfe-route" "/compendium" ]
-                        [ text "compendium →" ]
-                    , a [ class "dvisage", href "https://fixpointlinux.org/visage/", attribute "data-mfe-route" "/visage" ]
-                        [ text "visage →" ]
-                    , a [ class "dshen", href "https://fixpointlinux.org/shen/", attribute "data-mfe-route" "/shen" ]
-                        [ text "shen-meta →" ]
-                    , a [ class "dfxinit", href "https://fixpointlinux.org/fx-init/", attribute "data-mfe-route" "/fx-init" ]
-                        [ text "fx-init →" ]
-                    , a [ class "dfxcore", href "https://fixpointlinux.org/fx-core/", attribute "data-mfe-route" "/fx-core" ]
-                        [ text "fx-core →" ]
-                    , Fixpoint.Nav.menuItem "https://github.com/fixpoint-linux/fixpoint-linux" "fixpoint-linux"
-                    ]
-                }
+            [ Fixpoint.Nav.homeLink
+                "https://github.com/fixpoint-linux/fixpoint-linux"
+                "home"
             ]
         }
 
@@ -160,416 +133,247 @@ headerView =
             [ Fixpoint.Hero.hash
             , text " fixpoint-linux "
             , Fixpoint.Hero.dollar
-            , text " fx build --self-host"
+            , text " qemu-system-x86_64 -drive file=fixpoint.raw"
             , Fixpoint.Hero.blink
             ]
         , title =
-            [ text "A Linux system that is "
-            , Fixpoint.Hero.fx [ text "a fixed point" ]
-            , text "."
+            [ text "Boot "
+            , Fixpoint.Hero.fx [ text "fixpoint-linux" ]
+            , text " in QEMU."
             ]
         , tagline =
-            [ text "deterministically built, "
-            , b [] [ text "from source, by itself" ]
+            [ text "one download, one command — "
+            , b [] [ text "from zero to a booting system" ]
             , text "."
             ]
         }
 
 
 
--- Section: #demo (the live in-browser terminal)
+-- Section: #get
 
 
-{-| The live fx-init demo, front and center under the hero.
-
-The `#fx-demo-mount` div is deliberately an EMPTY mount point: it is plain
-HTML that Elm renders once and never touches again. The terminal itself is a
-non-Elm `@mfe` module deployed with the fx-init site (`/fx-init/shell/mfe/
-fx-init-demo.js`, same origin) — `shell/shell.js` imports it client-side and
-mounts it into this div, and re-mounts it whenever a fresh empty container
-appears (the landing MFE is re-created on SPA navigation back to `/`).
-Rendering any Elm content inside the container would be clobbered by the
-MFE's own DOM, so it must stay empty here — no attributes beyond the id, no
-children, no `data-mfe` (the demo is mounted from the shell, not reconciled).
--}
-demoSection : Html Msg
-demoSection =
+getSection : Html Msg
+getSection =
     Fixpoint.Section.view
-        { id = "demo"
-        , title = "Try it — fixpoint-linux, live in your browser"
-        , hint = "// fxstore · fx-activate · fxctl · dhall — the real CLIs, compiled to wasm"
+        { id = "get"
+        , title = "Get the image"
+        , hint = "// curl · gunzip · sha256sum"
         , children =
-            [ p []
-                [ text "No screencast, no server round-trip: the terminal below runs the real "
-                , Fixpoint.Code.inline "fxstore"
-                , text ", "
-                , Fixpoint.Code.inline "fx-activate"
-                , text ", "
-                , Fixpoint.Code.inline "fxctl"
-                , text " and "
-                , Fixpoint.Code.inline "dhall"
-                , text " binaries — compiled to WebAssembly — building and activating an in-memory "
-                , Fixpoint.Code.inline "/fx/store"
-                , text " inside this page. When the boot log settles, the prompt is live; type "
-                , Fixpoint.Code.inline "help"
+            [ getCommands
+            , p []
+                [ text "That is a 64 MiB raw disk image (the download is ~16.8 MB gzipped). The partition is blank until first boot — see "
+                , a [ href "#inside" ] [ text "what just happened" ]
+                , text ". The release lives at "
+                , a [ href "https://github.com/fixpoint-linux/fx-init/releases/tag/image-m1" ]
+                    [ text "fx-init · image-m1" ]
                 , text "."
                 ]
-            , div [ id "fx-demo-mount" ] []
+            , shaBlock
             ]
         }
 
 
-
--- Section: #idea
-
-
-ideaSection : Html Msg
-ideaSection =
-    Fixpoint.Section.view
-        { id = "idea"
-        , title = "The idea"
-        , hint = "// least_fixed_point(datalog) + dafsa"
-        , children =
-            [ p []
-                [ Fixpoint.Code.inline "fixpoint-linux"
-                , text " is a collection of small, self-contained components written in "
-                , b [] [ text "C11" ]
-                , text " that assemble into a coherent Linux userspace. Every binary is compiled with "
-                , a [ href "https://github.com/jart/cosmopolitan" ] [ Fixpoint.Code.inline "cosmocc" ]
-                , text " into a single portable "
-                , a [ href "https://justine.lol/ape.html" ] [ Fixpoint.Code.inline "Actually Portable Executable" ]
-                , text " (APE) — one file that runs on Linux, macOS, Windows, and the BSDs with "
-                , b [] [ text "no VM, no runtime, no interpreter, no dependencies" ]
-                , text "."
-                ]
-            , p []
-                [ text "Everything is configured in "
-                , a [ href "https://dhall-lang.org/" ] [ Fixpoint.Code.inline "Dhall" ]
-                , text ", a strongly-typed, total configuration language. Configs are typechecked, normalized, and "
-                , em [] [ text "terminate" ]
-                , text " — they are programs, not property files."
-                ]
-            , p []
-                [ text "The name comes from the two ideas at the heart of the stack:" ]
-            , Fixpoint.Grid.grid
-                [ Fixpoint.Card.view
-                    { n = "01"
-                    , title = "Fixpoint"
-                    , body =
-                        [ text "The least-fixed-point semantics of "
-                        , a [ href "https://en.wikipedia.org/wiki/Datalog" ] [ text "Datalog" ]
-                        , text "; a system is its own build artifact, deterministic and reproducible."
-                        ]
-                    }
-                , Fixpoint.Card.view
-                    { n = "02"
-                    , title = "DAFSA"
-                    , body =
-                        [ text "The "
-                        , a [ href "https://en.wikipedia.org/wiki/Deterministic_acyclic_finite_state_automaton" ]
-                            [ text "minimal acyclic finite-state automaton" ]
-                        , text " that backs the data stores: compact, exact, fast."
-                        ]
-                    }
-                ]
-            ]
-        }
-
-
-
--- Section: #time
-
-
-timeSection : Html Msg
-timeSection =
-    Fixpoint.Section.view
-        { id = "time"
-        , title = "A system that never forgets itself"
-        , hint = "// dl_publish_snapshot · dl_snapshot_versions · dl_query_version"
-        , children =
-            [ p []
-                [ Fixpoint.Code.inline "fixpoint-linux"
-                , text " is "
-                , b [] [ text "content-addressed by construction and time-travelling by default" ]
-                , text ". Every change is one atomic snapshot of the whole system; the timeline is the system's complete history. Inspect any past state with an as-of query, roll back to any earlier point, and undo the rollback itself — without ever losing the record of what happened."
-                ]
-            , timelineBlock
-            , Fixpoint.Checks.view
-                [ li []
-                    [ b [] [ text "Roll-forward rollbacks" ]
-                    , text " — the timeline is an append-only ledger; going back is recorded as history and always undoable."
-                    ]
-                , li []
-                    [ b [] [ text "Boot rollback" ]
-                    , text " — if the latest activation fails to come up, init rolls back to the last good state automatically."
-                    ]
-                , li []
-                    [ b [] [ text "Generation GC" ]
-                    , text " — keep N bootable generations, prune the rest, done."
-                    ]
-                ]
-            , p []
-                [ text "Powered by "
-                , Fixpoint.Code.inline "datalog-dafsa"
-                , text "'s native snapshot time-travel."
-                ]
-            ]
-        }
-
-
-{-| The `fx status` timeline pre block. There is no shared `Fixpoint` helper
-for the `.timeline` block (only `pre.code`), so it stays as hand-written Html
-using the `.timeline` classes from `Fixpoint.Style.stylesheet`.
+{-| The download + gunzip block.
 -}
-timelineBlock : Html Msg
-timelineBlock =
-    pre [ class "timeline" ]
-        ([ text "$ fx status\n" ]
-            ++ timelineLine "v042" "2026-08-18 09:12:41 · activated · ok"
-            ++ timelineLine "v041" "2026-08-17 22:04:09 · activated · ok"
-            ++ timelineLine "v040" "2026-08-17 18:55:31 · rolled-forward to v042"
-            ++ timelineLine "v039" "2026-08-16 11:02:17 · activated · ok"
-            ++ [ text "...\n$ fx rollback v039   "
-               , span [ class "dim" ] [ text "# record it as history, always undoable" ]
-               ]
-        )
+getCommands : Html Msg
+getCommands =
+    Fixpoint.Code.block
+        [ Fixpoint.Code.k "$"
+        , text " "
+        , Fixpoint.Code.g "curl"
+        , text " -fL -o fixpoint.raw.gz \\\n"
+        , text "  https://github.com/fixpoint-linux/fx-init/releases/download/image-m1/fixpoint-m1-x86_64.raw.gz\n"
+        , Fixpoint.Code.k "$"
+        , text " "
+        , Fixpoint.Code.g "gunzip"
+        , text " fixpoint.raw.gz"
+        ]
 
 
-{-| One line of the `fx status` timeline: the version (accent) + trailing
-space + the note (dim), each terminated by a newline.
+{-| The checksum block: the uncompressed image's sha256.
 -}
-timelineLine : String -> String -> List (Html Msg)
-timelineLine version note =
-    [ span [ class "c" ] [ text version ]
-    , text " "
-    , span [ class "dim" ] [ text note ]
-    , text "\n"
-    ]
-
-
-
--- Section: #stack (component table)
-
-
-stackSection : Html Msg
-stackSection =
-    Fixpoint.Section.view
-        { id = "stack"
-        , title = "The stack"
-        , hint = "// self-contained · portable · reproducible"
-        , children =
-            [ table [ class "stack" ]
-                [ thead []
-                    [ tr []
-                        [ th [] [ text "Component" ]
-                        , th [] [ text "What it is" ]
-                        ]
-                    ]
-                , tbody []
-                    [ stackRow "fixpoint-linux"
-                        "https://github.com/fixpoint-linux/fixpoint-linux"
-                        [ b [] [ text "The system itself" ]
-                        , text " — a Dhall-specified, self-hosting Linux distro. Like Nix's "
-                        , em [] [ text "model" ]
-                        , text " (pure derivations, content-addressed store, hermetic builds) without the Nix language. Time-travelling — the whole system remembers and rolls back. "
-                        , a [ href "https://github.com/fixpoint-linux/fixpoint-linux/blob/main/DESIGN.md" ]
-                            [ text "Read the design →" ]
-                        ]
-                    , stackRow "dhall-c"
-                        "https://github.com/fixpoint-linux/dhall-c"
-                        [ text "A subset interpreter for Dhall, in C. "
-                        , Fixpoint.Code.inline "typecheck"
-                        , text ", "
-                        , Fixpoint.Code.inline "normalize"
-                        , text ", "
-                        , Fixpoint.Code.inline "to-json"
-                        , text "/"
-                        , Fixpoint.Code.inline "toml"
-                        , text "/"
-                        , Fixpoint.Code.inline "yaml"
-                        , text ". The typed-config foundation everything builds on. "
-                        , a [ href "https://fixpointlinux.org/dhall-c/", attribute "data-mfe-route" "/dhall-c" ] [ text "Docs →" ]
-                        ]
-                    , stackRow "datalog-dafsa"
-                        "https://github.com/fixpoint-linux/datalog-dafsa"
-                        [ text "A DAFSA-backed Datalog engine in C. Facts into an on-disk minimal-acyclic-DAFSA store, rules to a small VM, reads from an mmap'd snapshot. "
-                        , b [] [ text "Native time travel" ]
-                        , text " — immutable versioned snapshots and as-of queries as a first-class feature. "
-                        , a [ href "https://fixpointlinux.org/datalog-dafsa/", attribute "data-mfe-route" "/datalog-dafsa" ] [ text "Docs →" ]
-                        ]
-                    , stackRow "dhake"
-                        "https://github.com/fixpoint-linux/dhake"
-                        [ text "A Make-like build tool whose buildfile is a Dhall program ("
-                        , Fixpoint.Code.inline "Dhakefile.dhall"
-                        , text "). Typed actions, incremental checks, phony targets, "
-                        , Fixpoint.Code.inline "-j"
-                        , text " parallel builds. "
-                        , b [] [ text "Self-hosting" ]
-                        , text " — it builds itself. "
-                        , a [ href "https://fixpointlinux.org/dhake/" ] [ text "Docs →" ]
-                        ]
-                    , stackRow "fxstore"
-                        "https://github.com/fixpoint-linux/fxstore"
-                        [ b [] [ text "content-addressed build store" ]
-                        , text " — reads a Dhall package set, computes the dependency closure as a least fixed point with "
-                        , Fixpoint.Code.inline "datalog-dafsa"
-                        , text ", and builds each package's typed recipe into "
-                        , Fixpoint.Code.inline "/fx/store/<hash>-<name>"
-                        , text ". Crash-consistent, bwrap-sandboxed. "
-                        , a [ href "https://fixpointlinux.org/fxstore/" ] [ text "Docs →" ]
-                        ]
-                    , stackRow "compendium"
-                        "https://github.com/fixpoint-linux/compendium"
-                        [ text "A small, self-contained authoritative DNS server (UDP, RFC 1035), configured in Dhall, shipped as a single APE binary. "
-                        , a [ href "https://fixpointlinux.org/compendium/", attribute "data-mfe-route" "/compendium" ] [ text "Docs →" ]
-                        ]
-                    , stackRow "visage"
-                        "https://github.com/fixpoint-linux/visage"
-                        [ text "A compact email alias & forwarding server — disposable "
-                        , Fixpoint.Code.inline "alias@domain"
-                        , text " addresses backed by a DAFSA store. Daemon and store in one small APE binary. "
-                        , a [ href "https://fixpointlinux.org/visage/", attribute "data-mfe-route" "/visage" ] [ text "Docs →" ]
-                        ]
-                    , stackRow "dafsa"
-                        "https://github.com/fixpoint-linux/dafsa"
-                        [ text "The Carrasco–Forcada incremental DAFSA — minimal automaton with add/delete/lookup, persistence and DOT export. "
-                        , a [ href "https://fixpointlinux.org/dafsa/", attribute "data-mfe-route" "/dafsa" ] [ text "Docs →" ]
-                        ]
-                    , stackRow "shen-meta"
-                        "https://github.com/fixpoint-linux/shen-meta"
-                        [ text "A self-hosted Shen implementation — a "
-                        , b [] [ text "sequent-calculus Lisp" ]
-                        , text ". Evaluates itself, compiles itself to native bytecode, runs on a native C VM with a custom GC. "
-                        , a [ href "https://fixpointlinux.org/shen/", attribute "data-mfe-route" "/shen" ] [ text "Docs →" ]
-                        ]
-                    , stackRow "fx-init"
-                        "https://github.com/fixpoint-linux/fx-init"
-                        [ b [] [ text "The running system" ]
-                        , text " — a lean PID1/supervisor. Reads the store generation, boots the rootfs via "
-                        , Fixpoint.Code.inline "dhake"
-                        , text ", supervises services (readiness + health, restart, backoff), and maintains the live runtime datalog DB. "
-                        , Fixpoint.Code.inline "fx-activate"
-                        , text " activates a generation; "
-                        , Fixpoint.Code.inline "fxctl"
-                        , text " queries and controls over a datalog socket. "
-                        , a [ href "https://fixpointlinux.org/fx-init/", attribute "data-mfe-route" "/fx-init" ] [ text "Docs →" ]
-                        ]
-                    , stackRow "fx-core"
-                        "https://github.com/fixpoint-linux/fx-core"
-                        [ b [] [ text "The coreutils" ]
-                        , text " — not a port of GNU/BSD coreutils but the same commands re-expressed in the fixpoint style: Dhall-typed arguments, Datalog/DAFSA relations, deterministic by construction. "
-                        , b [] [ text "Define the CLI once, in Dhall" ]
-                        , text " — one schema per command generates both the typed record form and the POSIX surface, so the "
-                        , Fixpoint.Code.inline "fx-compose"
-                        , text " pipeline and every command stay in step. "
-                        , a [ href "https://fixpointlinux.org/fx-core/", attribute "data-mfe-route" "/fx-core" ] [ text "Docs →" ]
-                        ]
-                    ]
-                ]
-            ]
-        }
-
-
-{-| One row of the stack table: the monospace name link + the description cell.
-There is no shared `Fixpoint` helper for the `.stack` table, so it stays as
-hand-written Html using the `.stack` classes from `Fixpoint.Style.stylesheet`.
--}
-stackRow : String -> String -> List (Html Msg) -> Html Msg
-stackRow name url descChildren =
-    tr []
-        [ td [ class "name" ] [ a [ href url ] [ text name ] ]
-        , td [ class "desc" ] descChildren
+shaBlock : Html Msg
+shaBlock =
+    Fixpoint.Code.block
+        [ Fixpoint.Code.k "$"
+        , text " "
+        , Fixpoint.Code.g "sha256sum"
+        , text " fixpoint.raw\n"
+        , text "6cdd27518ed2fc4dd2cbcaecbc6abfec8b0cce72eba97d52ac078ad1f7d7d2d3  fixpoint.raw"
         ]
 
 
 
--- Section: #principles (α–ζ cards)
+-- Section: #boot
 
 
-principlesSection : Html Msg
-principlesSection =
+bootSection : Html Msg
+bootSection =
     Fixpoint.Section.view
-        { id = "principles"
-        , title = "Design principles"
-        , hint = "// ethos"
+        { id = "boot"
+        , title = "Boot it"
+        , hint = "// qemu-system-x86_64 · serial console · virtio"
+        , children =
+            [ p []
+                [ text "Boot the image under QEMU, with the serial console attached."
+                ]
+            , qemuBlock
+            , Fixpoint.Callout.warn
+                [ text "You need "
+                , Fixpoint.Code.inline "qemu-system-x86_64"
+                , text " plus hardware virtualization ("
+                , Fixpoint.Code.inline "/dev/kvm"
+                , text ") — the image is x86_64 and boots under "
+                , Fixpoint.Code.inline "-accel kvm"
+                , text "."
+                ]
+            , Fixpoint.Callout.note
+                [ text "Leave QEMU with "
+                , Fixpoint.Code.inline "Ctrl-A X"
+                , text "."
+                ]
+            , p []
+                [ text "The serial console ends with the image reporting its own verdict:"
+                ]
+            , transcriptBlock
+            ]
+        }
+
+
+{-| The QEMU command block.
+-}
+qemuBlock : Html Msg
+qemuBlock =
+    Fixpoint.Code.block
+        [ Fixpoint.Code.k "$"
+        , text " "
+        , Fixpoint.Code.g "qemu-system-x86_64"
+        , text " -machine q35 -accel kvm -cpu host -m 2048 -nographic \\\n"
+        , text "  -drive file=fixpoint.raw,format=raw,if=virtio"
+        ]
+
+
+{-| The boot transcript: the lines the serial console actually ends with
+(SeaBIOS, the kernel banner, then fx-init's verdict).
+-}
+transcriptBlock : Html Msg
+transcriptBlock =
+    Fixpoint.Code.block
+        [ text "SeaBIOS ...\n"
+        , text "Linux version 6.12.19 ...\n"
+        , Fixpoint.Code.c "...\n"
+        , Fixpoint.Code.g "fx-init: boot-ok v3"
+        ]
+
+
+
+-- Section: #inside
+
+
+insideSection : Html Msg
+insideSection =
+    Fixpoint.Section.view
+        { id = "inside"
+        , title = "What just happened"
+        , hint = "// fx-init · dhake · datalog"
         , children =
             [ Fixpoint.Grid.grid
                 [ Fixpoint.Card.view
-                    { n = "α"
-                    , title = "One binary, zero deps"
-                    , body = [ text "Cosmocc + APE means each tool is self-contained and portable across OSes." ]
-                    }
-                , Fixpoint.Card.view
-                    { n = "β"
-                    , title = "Config is typed code"
-                    , body = [ text "Dhall gives typechecking, imports, and reusable functions — and it always terminates." ]
-                    }
-                , Fixpoint.Card.view
-                    { n = "γ"
-                    , title = "Logic is declarative"
-                    , body = [ text "Datalog + DAFSA keep the data plane compact and exact." ]
-                    }
-                , Fixpoint.Card.view
-                    { n = "δ"
-                    , title = "Self-hosting"
+                    { n = "01"
+                    , title = "fx-init is PID1"
                     , body =
-                        [ text "Tools build themselves — see "
+                        [ Fixpoint.Code.inline "fx-init"
+                        , text " reads the current store generation, materializes the rootfs with "
                         , Fixpoint.Code.inline "dhake"
-                        , text "'s self-hosting buildfile."
+                        , text ", supervises services, and maintains a live Datalog DB — the sole writer of runtime state."
                         ]
                     }
                 , Fixpoint.Card.view
-                    { n = "ε"
-                    , title = "Content-addressed"
-                    , body = [ text "Every artifact's store path is a hash of its inputs — the closure is the identity, so the same spec always builds the same thing." ]
+                    { n = "02"
+                    , title = "A content-addressed store"
+                    , body =
+                        [ text "A Dhall config activates to a generation; each generation is one atomic snapshot of the whole system."
+                        ]
                     }
                 , Fixpoint.Card.view
-                    { n = "ζ"
-                    , title = "Small and legible"
-                    , body = [ text "Each component fits in your head; none pulls in a framework or heavyweight runtime." ]
+                    { n = "03"
+                    , title = "Time travel"
+                    , body =
+                        [ text "The timeline is the system's complete history; a rollback is recorded as history and is itself undoable."
+                        ]
+                    }
+                , Fixpoint.Card.view
+                    { n = "04"
+                    , title = "First boot formats"
+                    , body =
+                        [ text "The image ships a blank primary partition, formatted by the guest on first boot."
+                        ]
                     }
                 ]
+            , Fixpoint.Callout.note
+                [ text "This is an early milestone: it boots and reports its own verdict — "
+                , em [] [ text "not yet a general-purpose desktop." ]
+                ]
             ]
         }
 
 
 
--- Section: #design
+-- Section: #build
 
 
-designSection : Html Msg
-designSection =
+buildSection : Html Msg
+buildSection =
     Fixpoint.Section.view
-        { id = "design"
-        , title = "The system — read the design"
-        , hint = "// apex · spec + builds + store, all Dhall + Datalog + DAFSA"
+        { id = "build"
+        , title = "Build it yourself"
+        , hint = "// fx-init · zig · dhall"
         , children =
             [ p []
-                [ text "The org's apex is the "
-                , Fixpoint.Code.inline "fixpoint-linux"
-                , text " distro itself: a self-hosting Linux system whose spec, builds, and store are all Dhall + Datalog + DAFSA — content-addressed by construction."
+                [ text "The same image can be built from source instead of downloaded."
                 ]
-            , Fixpoint.Code.block
-                [ Fixpoint.Code.c "# build the Dhall interpreter, then the self-hosting build tool"
-                , text "\n"
-                , Fixpoint.Code.k "$"
-                , text " "
-                , Fixpoint.Code.g "cd"
-                , text " dhall-c && make && make test   "
-                , Fixpoint.Code.c "# builds dhall.com (APE) + runs the test suite"
-                , text "\n"
-                , Fixpoint.Code.k "$"
-                , text " "
-                , Fixpoint.Code.g "cd"
-                , text " dhake   && make                "
-                , Fixpoint.Code.c "# self-hosting: builds dhake.com from its Dhakefile.dhall"
-                ]
+            , buildBlock
             , p []
-                [ a [ href "https://github.com/fixpoint-linux/fixpoint-linux/blob/main/DESIGN.md" ]
-                    [ text "👉 Read the full architecture design" ]
+                [ text "The result is the same "
+                , Fixpoint.Code.inline "fixpoint.raw"
+                , text " — boot it with the same "
+                , a [ href "#boot" ] [ text "QEMU command above" ]
+                , text "."
                 ]
             ]
         }
+
+
+{-| The source-build block: clone fx-init (with submodules), build the image
+tool, and assemble the image from its Dhall config / package set / kernel pin.
+-}
+buildBlock : Html Msg
+buildBlock =
+    Fixpoint.Code.block
+        [ Fixpoint.Code.k "$"
+        , text " "
+        , Fixpoint.Code.g "git"
+        , text " clone https://github.com/fixpoint-linux/fx-init && "
+        , Fixpoint.Code.g "cd"
+        , text " fx-init\n"
+        , Fixpoint.Code.k "$"
+        , text " "
+        , Fixpoint.Code.g "git"
+        , text " submodule update --init --recursive\n"
+        , Fixpoint.Code.k "$"
+        , text " ("
+        , Fixpoint.Code.g "cd"
+        , text " zig && "
+        , Fixpoint.Code.g "zig"
+        , text " build -Doptimize=ReleaseSafe)\n"
+        , Fixpoint.Code.k "$"
+        , text " ./zig/zig-out/bin/fx-image \\\n"
+        , text "  --config m3/config-good.dhall \\\n"
+        , text "  --package-set m3/package-set.dhall \\\n"
+        , text "  --pin scripts/kernel-pin.txt \\\n"
+        , text "  --out fixpoint.raw"
+        ]
 
 
 
@@ -582,7 +386,5 @@ footerView =
         [ a [ href "https://github.com/fixpoint-linux" ]
             [ text "github.com/fixpoint-linux" ]
         , Fixpoint.Footer.sep
-        , text "built with ❤️ and a single "
-        , Fixpoint.Code.inline "cosmocc"
-        , text " invocation"
+        , text "a fixed point, built from source, by itself"
         ]
