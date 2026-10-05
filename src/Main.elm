@@ -139,7 +139,7 @@ headerView =
         , title =
             [ text "Boot "
             , Fixpoint.Hero.fx [ text "fixpoint-linux" ]
-            , text " in QEMU."
+            , text " — land in the shell."
             ]
         , tagline =
             [ text "one download, one command — "
@@ -162,11 +162,11 @@ getSection =
         , children =
             [ getCommands
             , p []
-                [ text "That is a 64 MiB raw disk image (the download is ~16.8 MB gzipped). The partition is blank until first boot — see "
+                [ text "That is a 128 MiB raw disk image (the download is ~32.5 MB gzipped). The partition is blank until first boot — see "
                 , a [ href "#inside" ] [ text "what just happened" ]
                 , text ". The release lives at "
-                , a [ href "https://github.com/fixpoint-linux/fx-init/releases/tag/image-m1" ]
-                    [ text "fx-init · image-m1" ]
+                , a [ href "https://github.com/fixpoint-linux/fx-init/releases/tag/image-m2" ]
+                    [ text "fx-init · image-m2" ]
                 , text "."
                 ]
             , shaBlock
@@ -183,7 +183,7 @@ getCommands =
         , text " "
         , Fixpoint.Code.g "curl"
         , text " -fL -o fixpoint.raw.gz \\\n"
-        , text "  https://github.com/fixpoint-linux/fx-init/releases/download/image-m1/fixpoint-m1-x86_64.raw.gz\n"
+        , text "  https://github.com/fixpoint-linux/fx-init/releases/download/image-m2/fixpoint-m2-x86_64.raw.gz\n"
         , Fixpoint.Code.k "$"
         , text " "
         , Fixpoint.Code.g "gunzip"
@@ -200,7 +200,7 @@ shaBlock =
         , text " "
         , Fixpoint.Code.g "sha256sum"
         , text " fixpoint.raw\n"
-        , text "6cdd27518ed2fc4dd2cbcaecbc6abfec8b0cce72eba97d52ac078ad1f7d7d2d3  fixpoint.raw"
+        , text "1dea1346530d2c85b784d20ba49540779bd8f4fccd656ba428c01e49c4eed66e  fixpoint.raw"
         ]
 
 
@@ -234,7 +234,7 @@ bootSection =
                 , text "."
                 ]
             , p []
-                [ text "The serial console ends with the image reporting its own verdict:"
+                [ text "The serial console ends at an interactive prompt — you land in the fixpoint shell:"
                 ]
             , transcriptBlock
             ]
@@ -255,7 +255,7 @@ qemuBlock =
 
 
 {-| The boot transcript: the lines the serial console actually ends with
-(SeaBIOS, the kernel banner, then fx-init's verdict).
+(SeaBIOS, the kernel banner, fx-init's handover, then the `fxsh` prompt).
 -}
 transcriptBlock : Html Msg
 transcriptBlock =
@@ -263,7 +263,12 @@ transcriptBlock =
         [ text "SeaBIOS ...\n"
         , text "Linux version 6.12.19 ...\n"
         , Fixpoint.Code.c "...\n"
+        , text "Run /fx/store/<hash>-fx-init/fx-init as init process\n"
+        , text "fx-init: disk store mounted (current v3)\n"
+        , text "fx-init: pivoted to tmpfs root (magic 0x1021994)\n"
         , Fixpoint.Code.g "fx-init: boot-ok v3"
+        , text "\n"
+        , Fixpoint.Code.g "fx>"
         ]
 
 
@@ -286,7 +291,15 @@ insideSection =
                         [ Fixpoint.Code.inline "fx-init"
                         , text " reads the current store generation, materializes the rootfs with "
                         , Fixpoint.Code.inline "dhake"
-                        , text ", supervises services, and maintains a live Datalog DB — the sole writer of runtime state."
+                        , text ", supervises services, and maintains a live Datalog DB — the sole writer of runtime state. The prompt it hands you is "
+                        , Fixpoint.Code.inline "fxsh"
+                        , text ", fx-core's own shell — the real "
+                        , Fixpoint.Code.inline "fx-*"
+                        , text " commands from the image ("
+                        , Fixpoint.Code.inline "fx-seq 1 5 | fx-sort -r"
+                        , text ", "
+                        , Fixpoint.Code.inline "fx-cat /etc/hostname"
+                        , text ")."
                         ]
                     }
                 , Fixpoint.Card.view
@@ -312,7 +325,7 @@ insideSection =
                     }
                 ]
             , Fixpoint.Callout.note
-                [ text "This is an early milestone: it boots and reports its own verdict — "
+                [ text "This is an early milestone: it boots and lands you at a prompt — "
                 , em [] [ text "not yet a general-purpose desktop." ]
                 ]
             ]
@@ -369,7 +382,7 @@ buildBlock =
         , text " build -Doptimize=ReleaseSafe)\n"
         , Fixpoint.Code.k "$"
         , text " ./zig/zig-out/bin/fx-image \\\n"
-        , text "  --config m3/config-good.dhall \\\n"
+        , text "  --config m3/config-console.dhall \\\n"
         , text "  --package-set m3/package-set.dhall \\\n"
         , text "  --pin scripts/kernel-pin.txt \\\n"
         , text "  --out fixpoint.raw"
