@@ -162,11 +162,11 @@ getSection =
         , children =
             [ getCommands
             , p []
-                [ text "That is a 128 MiB raw disk image (the download is ~32.5 MB gzipped). The partition is blank until first boot — see "
+                [ text "That is a 64 MiB raw disk image (the download is ~15.8 MB gzipped). The partition is blank until first boot — see "
                 , a [ href "#inside" ] [ text "what just happened" ]
                 , text ". The release lives at "
-                , a [ href "https://github.com/fixpoint-linux/fx-init/releases/tag/image-m2" ]
-                    [ text "fx-init · image-m2" ]
+                , a [ href "https://github.com/fixpoint-linux/fx-init/releases/tag/image-m3" ]
+                    [ text "fx-init · image-m3" ]
                 , text "."
                 ]
             , shaBlock
@@ -183,7 +183,7 @@ getCommands =
         , text " "
         , Fixpoint.Code.g "curl"
         , text " -fL -o fixpoint.raw.gz \\\n"
-        , text "  https://github.com/fixpoint-linux/fx-init/releases/download/image-m2/fixpoint-m2-x86_64.raw.gz\n"
+        , text "  https://github.com/fixpoint-linux/fx-init/releases/download/image-m3/fixpoint-m3-x86_64.raw.gz\n"
         , Fixpoint.Code.k "$"
         , text " "
         , Fixpoint.Code.g "gunzip"
@@ -200,7 +200,7 @@ shaBlock =
         , text " "
         , Fixpoint.Code.g "sha256sum"
         , text " fixpoint.raw\n"
-        , text "1dea1346530d2c85b784d20ba49540779bd8f4fccd656ba428c01e49c4eed66e  fixpoint.raw"
+        , text "bf8c703f7e13aca975e2c4a6b95173f5981bd4f20478fc94ac88bd15f5fd0879  fixpoint.raw"
         ]
 
 
