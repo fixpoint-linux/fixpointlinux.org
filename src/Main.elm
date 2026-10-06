@@ -37,8 +37,8 @@ import Fixpoint.Hero
 import Fixpoint.Nav
 import Fixpoint.Section
 import Fixpoint.Style
-import Html exposing (Html, a, b, div, em, p, span, text)
-import Html.Attributes exposing (class, href)
+import Html exposing (Html, a, b, div, em, node, p, span, text)
+import Html.Attributes exposing (attribute, class, href)
 
 
 main : Program () Model Msg
@@ -86,8 +86,10 @@ view : Model -> Html Msg
 view _ =
     div []
         [ Fixpoint.Style.stylesheet
+        , demoStyle
         , navView
         , headerView
+        , demoPanel
         , getSection
         , bootSection
         , insideSection
@@ -147,6 +149,92 @@ headerView =
             , text "."
             ]
         }
+
+
+
+-- Hero: the live in-browser demo panel
+
+
+{-| The live demo panel, rendered directly under the hero prompt/title/tagline.
+
+This is static markup only: the explanation and the boot affordance are
+readable — and the link still works — with no JavaScript at all. The
+`<iframe>` that actually loads `/fx-demo/`, and with it the kernel, initrd and
+emulator (~3.7 MB), is created by `bootDemo` in `shell/shell.js` when the
+visitor clicks the affordance, so the landing page itself never fetches any of
+the demo's assets.
+
+-}
+demoPanel : Html Msg
+demoPanel =
+    div [ class "wrap" ]
+        [ div [ class "fx-demo", attribute "data-fx-demo" "" ]
+            [ div [ class "fx-demo-bar" ]
+                [ span [ class "fx-demo-led" ] [ text "▊" ]
+                , span [ class "fx-demo-name" ] [ text "fixpoint-linux — live in this page" ]
+                , span [ class "fx-demo-meta" ] [ text "v86 · WebAssembly · 32-bit guest" ]
+                ]
+            , div [ class "fx-demo-stage" ]
+                [ p [ class "fx-demo-lead" ]
+                    [ text "The real system, booting inside this page: "
+                    , Fixpoint.Code.inline "fx-init"
+                    , text " as PID 1, the content-addressed store, "
+                    , Fixpoint.Code.inline "dhake"
+                    , text " materializing the rootfs, and "
+                    , Fixpoint.Code.inline "fxsh"
+                    , text " on the console — a 32-bit Linux guest emulated by v86 in WebAssembly."
+                    ]
+                , a
+                    [ class "cta-btn fx-demo-boot"
+                    , href "/fx-demo/"
+                    , attribute "data-fx-boot" ""
+                    ]
+                    [ text "boot it in your browser · ~3.7 MB" ]
+                , p [ class "fx-demo-note" ]
+                    [ text "Nothing is fetched until you click: the kernel, initrd and emulator together are ~3.7 MB, and the guest takes a few seconds to reach the prompt. The link opens the same demo as a full page if scripts are off."
+                    ]
+                , div
+                    [ class "fx-demo-status"
+                    , attribute "data-fx-demo-status" ""
+                    , attribute "role" "status"
+                    , attribute "aria-live" "polite"
+                    ]
+                    []
+                ]
+            ]
+        ]
+
+
+{-| Panel styles, layered on top of `Fixpoint.Style.stylesheet` — which
+documents that "component pages may layer their own small additions after this
+file". Tokens come from that stylesheet's `:root`, so the panel is drawn from
+the same palette and monospace as the rest of the page. `@keyframes blink` is
+reused from it too.
+-}
+demoStyle : Html Msg
+demoStyle =
+    node "style" [] [ text demoCss ]
+
+
+demoCss : String
+demoCss =
+    String.join "\n"
+        [ ".fx-demo { margin-top: 40px; background: var(--bg2); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }"
+        , ".fx-demo-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 10px 16px; border-bottom: 1px solid var(--line); font-family: var(--mono); font-size: 12.5px; color: var(--dim); }"
+        , ".fx-demo-bar .fx-demo-led { color: var(--accent); animation: blink 1.1s step-end infinite; }"
+        , ".fx-demo-bar .fx-demo-name { color: var(--fg); }"
+        , ".fx-demo-bar .fx-demo-meta { margin-left: auto; }"
+        , ".fx-demo-stage { padding: 18px 20px; }"
+        , ".fx-demo-lead { font-size: 14px; color: #c3ccd6; margin-bottom: 16px; }"
+        , ".fx-demo-boot { border: 0; font-family: var(--mono); font-size: 13.5px; cursor: pointer; }"
+        , ".fx-demo-note { font-family: var(--mono); font-size: 12.5px; color: var(--dim); margin: 12px 0 0; }"
+        , ".fx-demo-status { font-family: var(--mono); font-size: 12.5px; color: var(--accent2); padding-top: 12px; }"
+        , ".fx-demo-status:empty { display: none; }"
+        , ".fx-demo-frame { margin-top: 12px; aspect-ratio: 4 / 3; min-height: 320px; background: #000; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }"
+        , ".fx-demo-frame iframe { display: block; width: 100%; height: 100%; border: 0; }"
+        , ".fx-demo.is-booting .fx-demo-lead, .fx-demo.is-booting .fx-demo-boot, .fx-demo.is-booting .fx-demo-note { display: none; }"
+        , "@media (max-width: 620px) { .fx-demo-stage { padding: 14px; } .fx-demo-frame { aspect-ratio: auto; height: 380px; } }"
+        ]
 
 
 

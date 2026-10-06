@@ -53,3 +53,77 @@ const app = await createApp({
 
 // Expose the app handle so the shell/host can inspect or drive it later.
 window.__fixpointApp = app;
+
+
+// --- hero live demo: click-to-boot -----------------------------------------
+//
+// The panel this wires up is pre-rendered from `demoPanel` in src/Main.elm:
+// an explanation plus a boot link that is readable (and usable, as a plain
+// navigation to the demo) with no JavaScript at all. Nothing here fetches the
+// demo's assets — creating the <iframe> is what pulls in the kernel, initrd
+// and emulator (~3.7 MB), so it happens only on click.
+const DEMO_URL = '/fx-demo/';
+
+// Held in a module variable rather than on the DOM: the Elm MFE clears and
+// re-renders the pre-rendered markup during rehydration, so a click that lands
+// before that swap must still end with a frame in the *new* panel.
+let demoBooted = false;
+
+function bootDemo() {
+  demoBooted = true;
+  ensureDemoFrame();
+}
+
+/**
+ * Make the panel show the demo, idempotently: add the booting state, then the
+ * frame + iframe for /fx-demo/ if they are not already there.
+ */
+function ensureDemoFrame() {
+  if (!demoBooted) return;
+  const stage = document.querySelector('[data-fx-demo]');
+  if (!stage) return;
+  stage.classList.add('is-booting');
+
+  let frame = stage.querySelector('[data-fx-demo-frame]');
+  if (frame && frame.querySelector('iframe')) return; // already live
+
+  const status = stage.querySelector('[data-fx-demo-status]');
+  if (status) {
+    status.textContent = 'booting… fetching the kernel, initrd and emulator (~3.7 MB)';
+  }
+
+  if (!frame) {
+    frame = document.createElement('div');
+    frame.className = 'fx-demo-frame';
+    frame.setAttribute('data-fx-demo-frame', '');
+    stage.appendChild(frame);
+  }
+
+  const iframe = document.createElement('iframe');
+  iframe.title = 'fixpoint-linux running in the browser (v86 / WebAssembly)';
+  iframe.src = DEMO_URL;
+  // Deliberately NOT sandboxed: the demo is same-origin, and its terminal
+  // needs real keyboard focus plus its own WASM/asset fetches.
+  iframe.addEventListener('load', () => {
+    if (status) {
+      status.textContent =
+        'guest booting — click the terminal and type at the fx> prompt';
+    }
+  });
+  frame.appendChild(iframe);
+}
+
+// Delegated from the document so the handler survives the Elm MFE's
+// client-side re-render of the pre-rendered markup.
+document.addEventListener('click', (event) => {
+  const boot = event.target.closest && event.target.closest('[data-fx-boot]');
+  if (!boot) return;
+  // The href stays as the no-JS / plain-navigation fallback.
+  event.preventDefault();
+  bootDemo();
+});
+
+// createApp awaits its own first mount, so the Elm MFE has already replaced
+// the pre-rendered panel by this point — re-assert a boot that raced the swap
+// (and stay a no-op when nothing was clicked).
+ensureDemoFrame();
